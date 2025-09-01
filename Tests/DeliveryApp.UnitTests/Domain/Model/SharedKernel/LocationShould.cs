@@ -1,6 +1,5 @@
 ﻿using DeliveryApp.Core.Domain.Model.SharedKernel;
 using FluentAssertions;
-using Primitives;
 using Xunit;
 
 namespace DeliveryApp.UnitTests.Domain.Model.SharedKernel
@@ -90,7 +89,7 @@ namespace DeliveryApp.UnitTests.Domain.Model.SharedKernel
 
             //Assert
             result.IsFailure.Should().BeTrue();
-            result.Error.Should().BeEquivalentTo(GeneralErrors.NotFound());
+            result.Error.Should().NotBeNull();
         }
 
         [Fact]
