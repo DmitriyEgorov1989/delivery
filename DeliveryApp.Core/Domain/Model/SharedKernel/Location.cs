@@ -11,15 +11,29 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
         public int X { get; }
         public int Y { get; }
 
+        /// <summary>
+        /// ctr
+        /// </summary>
         [ExcludeFromCodeCoverage]
         private Location() { }
 
+        /// <summary>
+        /// ctr
+        /// </summary>
+        /// <param name="x">Координата х</param>
+        /// <param name="y">Координата у</param>
         private Location(int x, int y) : this()
         {
             X = x;
             Y = y;
         }
 
+        /// <summary>
+        /// Создаем локацию
+        /// </summary>
+        /// <param name="x">Координата х</param>
+        /// <param name="y">Координата у</param>
+        /// <returns></returns>
         public static Result<Location, Error> Create(int x, int y)
         {
             if (x < coordinateMin || x > coordinateMax)
@@ -35,6 +49,10 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
             return new Location(x, y);
         }
 
+        /// <summary>
+        /// Создаем рандомную локацию
+        /// </summary>
+        /// <returns></returns>
         public static Location CreateRandom()
         {
             var randomValueX = Random.Shared.Next(coordinateMin, coordinateMax + 1);
@@ -43,6 +61,11 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
             return new Location(randomValueX, randomValueY);
         }
 
+        /// <summary>
+        /// Высчитываем дистанцию до таргет
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
         public Result<int, Error> DistanceTo(Location target)
         {
             if (target == null)
@@ -55,6 +78,10 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
             return distance;
         }
 
+        /// <summary>
+        /// По чему сравниваем
+        /// </summary>
+        /// <returns></returns>
         [ExcludeFromCodeCoverage]
         protected override IEnumerable<object> GetEqualityComponents()
         {

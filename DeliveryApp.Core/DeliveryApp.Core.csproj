@@ -19,8 +19,4 @@
         <ProjectReference Include="..\Utils\Primitives\Primitives.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Domain\Model\OrderAggregate\" />
-    </ItemGroup>
-
 </Project>
