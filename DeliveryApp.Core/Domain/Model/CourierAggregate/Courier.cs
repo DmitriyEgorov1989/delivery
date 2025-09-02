@@ -108,7 +108,6 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             {
                 return GeneralErrors.ValueIsInvalid(nameof(order));
             }
-
             return StoragePlaces.Any(sp => sp.CanStore(order.Volume).IsSuccess);
         }
 
@@ -131,6 +130,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
                 return UnitResult.Failure<Error>(GeneralErrors.NotFound());
             }
             storagePlace.Store(order.Id, order.Volume);
+            order.Assign(Id);
 
             return UnitResult.Success<Error>();
         }
@@ -154,6 +154,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
                 return UnitResult.Failure<Error>(GeneralErrors.NotFound());
             }
             storagePlace.Clear(order.Id);
+            order.Complete();
 
             return UnitResult.Success<Error>();
         }
@@ -169,7 +170,6 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             {
                 return GeneralErrors.ValueIsInvalid(nameof(target));
             }
-
             var distance = Location.DistanceTo(target);
 
             if (distance.IsFailure)
@@ -190,7 +190,6 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             {
                 return GeneralErrors.ValueIsRequired(nameof(target));
             }
-
             var difX = target.X - Location.X;
             var difY = target.Y - Location.Y;
             var cruisingRange = Speed;
@@ -205,7 +204,6 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             {
                 return locationCreateResult.Error;
             }
-
             Location = locationCreateResult.Value;
 
             return UnitResult.Success<Error>();
