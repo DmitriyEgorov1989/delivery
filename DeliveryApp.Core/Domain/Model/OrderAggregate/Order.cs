@@ -21,6 +21,7 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
         [ExcludeFromCodeCoverage]
         public Order(Guid orderId, Location location, int volume)
         {
+            Id = orderId;
             Status = OrderStatus.Created;
             Location = location;
             Volume = volume;
@@ -69,7 +70,6 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
             {
                 return GeneralErrors.ValueIsRequired(nameof(volume));
             }
-
             return new Order(orderid, location, volume);
         }
 
@@ -85,8 +85,16 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
                 return GeneralErrors.ValueIsInvalid(nameof(courierId));
             }
 
-            Status = OrderStatus.Assigned;
-            CourierId = courierId;
+            if (Status == OrderStatus.Created)
+            {
+                Status = OrderStatus.Assigned;
+                CourierId = courierId;
+            }
+
+            if (Status != OrderStatus.Assigned || CourierId is null)
+            {
+                return GeneralErrors.ValueIsRequired($"{nameof(Status)} or {nameof(CourierId)}");
+            }
 
             return UnitResult.Success<Error>();
         }
@@ -96,10 +104,12 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
         /// <returns></returns>
         public UnitResult<Error> Complete()
         {
-            if (Status == OrderStatus.Assigned)
+            if (Status != OrderStatus.Assigned)
             {
-                Status = OrderStatus.Completed;
+                return GeneralErrors.ValueIsInvalid(nameof(Status));
             }
+            Status = OrderStatus.Completed;
+
             return UnitResult.Success<Error>();
         }
     }

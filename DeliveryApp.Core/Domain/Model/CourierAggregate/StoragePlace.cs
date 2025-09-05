@@ -50,7 +50,7 @@ namespace DeliveryApp.Core.Domain.Model.NewFolder
         /// <returns></returns>
         public static Result<StoragePlace, Error> Create(string name, int volume)
         {
-            if (name == null)
+            if (name == null || name == "")
             {
                 return GeneralErrors.ValueIsInvalid(nameof(name));
             }
@@ -59,7 +59,6 @@ namespace DeliveryApp.Core.Domain.Model.NewFolder
             {
                 return GeneralErrors.ValueIsRequired(nameof(volume));
             }
-
             return new StoragePlace(name, volume);
         }
 

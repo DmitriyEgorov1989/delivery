@@ -25,10 +25,11 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         /// <param name="storagePlace">Хранилище</param>
         private Courier(string name, int speed, Location location, StoragePlace storagePlace) : this()
         {
+            Id = Guid.NewGuid();
             Name = name;
             Speed = speed;
             Location = location;
-            List<StoragePlace> StoragePlaces = [storagePlace];
+            StoragePlaces = [storagePlace];
         }
 
         /// <summary>
@@ -60,7 +61,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         /// <returns></returns>
         public static Result<Courier, Error> Create(string name, int speed, Location location)
         {
-            if (name == null)
+            if (name == null || name == "")
             {
                 return GeneralErrors.ValueIsInvalid(nameof(name));
             }
@@ -86,6 +87,16 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
         /// <returns></returns>
         public UnitResult<Error> AddStoragePlace(string name, int volume)
         {
+            if (name == null || name == "")
+            {
+                return GeneralErrors.ValueIsInvalid(nameof(name));
+            }
+
+            if (volume <= 0)
+            {
+                return GeneralErrors.ValueIsRequired(nameof(volume));
+            }
+
             var storagePlace = StoragePlace.Create(name, volume);
 
             if (storagePlace.IsFailure)
@@ -122,15 +133,13 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             {
                 return GeneralErrors.ValueIsInvalid(nameof(order));
             }
-
-            var storagePlace = StoragePlaces.FirstOrDefault(x => CanTakeOrder(order).IsSuccess);
+            var storagePlace = StoragePlaces.FirstOrDefault(sp => sp.CanStore(order.Volume).IsSuccess);
 
             if (storagePlace is null)
             {
                 return UnitResult.Failure<Error>(GeneralErrors.NotFound());
             }
             storagePlace.Store(order.Id, order.Volume);
-            order.Assign(Id);
 
             return UnitResult.Success<Error>();
         }
@@ -146,15 +155,13 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             {
                 return GeneralErrors.ValueIsInvalid(nameof(order));
             }
-
-            var storagePlace = StoragePlaces.FirstOrDefault(x => x.OrderId == order.Id);
+            var storagePlace = StoragePlaces.FirstOrDefault(sp => sp.OrderId == order.Id);
 
             if (storagePlace is null)
             {
                 return UnitResult.Failure<Error>(GeneralErrors.NotFound());
             }
             storagePlace.Clear(order.Id);
-            order.Complete();
 
             return UnitResult.Success<Error>();
         }
