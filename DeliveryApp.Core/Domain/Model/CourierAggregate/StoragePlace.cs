@@ -20,7 +20,7 @@ namespace DeliveryApp.Core.Domain.Model.NewFolder
         /// </summary>
         /// <param name="Название"></param>
         /// <param volume="объем"></param>
-        public StoragePlace(string name, int volume)
+        private StoragePlace(string name, int volume)
         {
             Id = Guid.NewGuid();
             Name = name;
@@ -50,7 +50,7 @@ namespace DeliveryApp.Core.Domain.Model.NewFolder
         /// <returns></returns>
         public static Result<StoragePlace, Error> Create(string name, int volume)
         {
-            if (name == null)
+            if (name == null || name == string.Empty)
             {
                 return GeneralErrors.ValueIsInvalid(nameof(name));
             }
