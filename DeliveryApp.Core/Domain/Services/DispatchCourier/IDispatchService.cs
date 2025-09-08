@@ -5,7 +5,6 @@ using Primitives;
 
 namespace DeliveryApp.Core.Domain.Services.DispatchCourier
 {
-
     /// <summary>
     /// Интерфейс назначения курьеров
     /// </summary>

@@ -133,7 +133,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             {
                 return GeneralErrors.ValueIsInvalid(nameof(order));
             }
-            var storagePlace = StoragePlaces.FirstOrDefault(sp => CanTakeOrder(order).IsSuccess);
+            var storagePlace = StoragePlaces.FirstOrDefault(sp => CanTakeOrder(order).Value == true);
 
             if (storagePlace is null)
             {

@@ -84,7 +84,7 @@ namespace DeliveryApp.UnitTests.Domain.Model.CourierAggregate
 
             //Assert
             result.IsSuccess.Should().BeTrue();
-            result.Value.Should().Be(true);
+            result.Value.Should().BeTrue();
         }
 
         [Theory]

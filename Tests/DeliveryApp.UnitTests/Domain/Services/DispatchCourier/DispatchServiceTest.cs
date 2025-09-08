@@ -26,9 +26,10 @@ namespace DeliveryApp.UnitTests.Domain.Services.DispatchCourier
             var locationCourier2 = Location.Create(2, 2).Value;
             var courier1 = Courier.Create("Дальний", 2, locationCourier1).Value;
             var courier2 = Courier.Create("Ближний", 2, locationCourier2).Value;
+            IReadOnlyCollection<Courier> couriers = [courier1, courier2];
+
             var orderLocation = Location.Create(3, 3).Value;
             var order = Order.Create(Guid.NewGuid(), orderLocation, 2).Value;
-            IReadOnlyCollection<Courier> couriers = [courier1, courier2];
 
             //Act
             var result = _dispatcherService.Scoring(order, couriers);
@@ -50,9 +51,10 @@ namespace DeliveryApp.UnitTests.Domain.Services.DispatchCourier
             var locationCourier2 = Location.Create(2, 2).Value;
             var courier1 = Courier.Create("Дальний", 2, locationCourier1).Value;
             var courier2 = Courier.Create("Ближний", 2, locationCourier2).Value;
-            var orderLocation = Location.Create(3, 3).Value;
-            var order = Order.Create(Guid.NewGuid(), orderLocation, 11).Value;
             IReadOnlyCollection<Courier> couriers = [courier1, courier2];
+
+            var orderLocation = Location.Create(3, 3).Value;
+            var order = Order.Create(Guid.NewGuid(), orderLocation, 11).Value; ;
 
             //Act
             var result = _dispatcherService.Scoring(order, couriers);

@@ -19,7 +19,7 @@ namespace DeliveryApp.Core.Domain.Services.DispatchCourier
                 return GeneralErrors.ValueIsRequired(nameof(freeCouriers));
             }
 
-            var couriers = freeCouriers.Where(x => x.CanTakeOrder(order).Value);
+            var couriers = freeCouriers.Where(x => x.CanTakeOrder(order).Value == true);
 
             if (!couriers.Any())
             {
