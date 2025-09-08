@@ -7,7 +7,7 @@ namespace DeliveryApp.Core.Domain.Services.DispatchCourier
 {
     public class DispatchService : IDispatchService
     {
-        public Result<Courier, Error> Scoring(Order order, List<Courier> freeCouriers)
+        public Result<Courier, Error> Scoring(Order order, IReadOnlyCollection<Courier> freeCouriers)
         {
             if (order == null)
             {
@@ -19,13 +19,13 @@ namespace DeliveryApp.Core.Domain.Services.DispatchCourier
                 return GeneralErrors.ValueIsRequired(nameof(freeCouriers));
             }
 
-            var couriers = freeCouriers.Where(x => x.CanTakeOrder(order).IsSuccess);
+            var couriers = freeCouriers.Where(x => x.CanTakeOrder(order).Value);
 
             if (!couriers.Any())
             {
                 return GeneralErrors.NotFound();
             }
-            var courier = couriers.OrderBy(x => x.CalculateTimeToLocation(order.Location)).ToList()[0];
+            var courier = couriers.OrderBy(x => x.CalculateTimeToLocation(order.Location).Value).ToList()[0];
             courier.TakeOrder(order);
 
             return courier;

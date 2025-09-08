@@ -1,6 +1,10 @@
 using DeliveryApp.Api;
+using DeliveryApp.Core.Domain.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//DependencyInjection
+builder.Services.AddDomainService();
 
 // Health Checks
 builder.Services.AddHealthChecks();
@@ -24,9 +28,13 @@ var app = builder.Build();
 // -----------------------------------
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
+{
     app.UseDeveloperExceptionPage();
+}
 else
+{
     app.UseHsts();
+}
 
 app.UseHealthChecks("/health");
 app.UseRouting();

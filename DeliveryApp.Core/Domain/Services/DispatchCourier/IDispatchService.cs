@@ -17,6 +17,6 @@ namespace DeliveryApp.Core.Domain.Services.DispatchCourier
         /// <param name="order">Заказ</param>
         /// <param name="couriers">Список свободных курьеров(CanTakeOrder()==true)</param>
         /// <returns></returns>
-        Result<Courier, Error> Scoring(Order order, List<Courier> couriers);
+        Result<Courier, Error> Scoring(Order order, IReadOnlyCollection<Courier> couriers);
     }
 }
