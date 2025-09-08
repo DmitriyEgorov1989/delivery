@@ -19,7 +19,7 @@ namespace DeliveryApp.Core.Ports
         /// </summary>
         /// <param name="order">Закаp</param>
         /// <returns></returns>
-        Task UpdateAsync(Order order);
+        void Update(Order order);
 
         /// <summary>
         /// Получение закааза по Id
@@ -38,6 +38,6 @@ namespace DeliveryApp.Core.Ports
         /// Получение списка назначенных заказов
         /// </summary>
         /// <returns></returns>
-        Task<IQueryable<Order>> GetAllAssignedAsync();
+        Task<List<Order>> GetAllAssignedAsync();
     }
 }
