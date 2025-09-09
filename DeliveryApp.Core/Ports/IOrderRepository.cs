@@ -1,4 +1,5 @@
-﻿using DeliveryApp.Core.Domain.Model.OrderAggregate;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
 
 namespace DeliveryApp.Core.Ports
 {
@@ -26,18 +27,18 @@ namespace DeliveryApp.Core.Ports
         /// </summary>
         /// <param name="orderId">Id заказа</param>
         /// <returns></returns>
-        Task<Order> GetByIdAsync(Guid orderId);
+        Task<Maybe<Order>> GetByIdAsync(Guid orderId);
 
         /// <summary>
         /// Получение любого заказа со статусом Created
         /// </summary>
         /// <returns></returns>
-        Task<Order> GetCreated();
+        Task<Maybe<Order>> GetCreated();
 
         /// <summary>
         /// Получение списка назначенных заказов
         /// </summary>
         /// <returns></returns>
-        Task<List<Order>> GetAllAssignedAsync();
+        IQueryable<Order> GetAllAssignedAsync();
     }
 }

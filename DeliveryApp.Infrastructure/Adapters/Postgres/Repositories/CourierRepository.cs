@@ -1,4 +1,5 @@
-﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Ports;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,21 +23,20 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
             await _dbContext.Couriers.AddAsync(courier);
         }
 
-        public async Task<List<Courier>> GetAllFreeAsync()
+        public IQueryable<Courier> GetAllFreeAsync()
         {
-            var freeCouriers = await _dbContext.Couriers.Where(x => x.StoragePlaces.All(sp => sp.OrderId == null))
-                                                        .ToListAsync();
-            if (freeCouriers == null)
-            {
-                throw new ArgumentNullException("FreeCouriers Not Found");
-            }
-            return freeCouriers;
+            return _dbContext.Couriers.Where(x => x.StoragePlaces.All(sp => sp.OrderId == null))
+                                                        .Include(c => c.StoragePlaces)
+                                                        .AsNoTracking();
         }
 
-        public async Task<Courier> GetByIdAsync(Guid courierId)
+        public async Task<Maybe<Courier>> GetByIdAsync(Guid courierId)
         {
-            return await _dbContext.Couriers.FindAsync(courierId)
-                         ?? throw new ArgumentNullException($"Courier c Id {courierId} Not Found"); ;
+            var courier = await _dbContext.Couriers.Where(x => x.Id == courierId)
+                                                   .Include(c => c.StoragePlaces)
+                                                   .FirstOrDefaultAsync();
+
+            return courier ?? Maybe<Courier>.None;
         }
 
         public void Update(Courier courier)

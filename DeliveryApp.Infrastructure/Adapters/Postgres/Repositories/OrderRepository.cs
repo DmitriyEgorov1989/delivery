@@ -1,4 +1,5 @@
-﻿using DeliveryApp.Core.Domain.Model.OrderAggregate;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
 using DeliveryApp.Core.Ports;
 using Microsoft.EntityFrameworkCore;
@@ -23,26 +24,27 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
             await _dbContext.Orders.AddAsync(order);
         }
 
-        public async Task<List<Order>> GetAllAssignedAsync()
+        public IQueryable<Order> GetAllAssignedAsync()
         {
-            var assignedOrders = await _dbContext.Orders.Where(o => o.Status == OrderStatus.Assigned)
-                                                        .ToListAsync();
-
-            return assignedOrders ?? throw new ArgumentNullException(nameof(assignedOrders));
+            return _dbContext.Orders.Where(o => o.Status == OrderStatus.Assigned);
         }
 
-        public async Task<Order> GetByIdAsync(Guid orderId)
+        public async Task<Maybe<Order>> GetByIdAsync(Guid orderId)
         {
+            if (orderId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(orderId));
+            }
             var order = await _dbContext.Orders.FindAsync(orderId);
 
-            return order ?? throw new ArgumentNullException(nameof(order));
+            return order ?? Maybe<Order>.None;
         }
 
-        public async Task<Order> GetCreated()
+        public async Task<Maybe<Order>> GetCreated()
         {
             var order = await _dbContext.Orders.FirstAsync(o => o.Status == OrderStatus.Created);
 
-            return order ?? throw new ArgumentNullException(nameof(order));
+            return order ?? Maybe<Order>.None;
         }
 
         public void Update(Order order)

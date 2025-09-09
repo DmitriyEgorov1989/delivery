@@ -1,4 +1,5 @@
-﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
 
 namespace DeliveryApp.Core.Ports
 {
@@ -26,12 +27,12 @@ namespace DeliveryApp.Core.Ports
         /// </summary>
         /// <param name="courierId"></param>
         /// <returns></returns>
-        Task<Courier> GetByIdAsync(Guid courierId);
+        Task<Maybe<Courier>> GetByIdAsync(Guid courierId);
 
         /// <summary>
         /// Получение всех свободных курьеров
         /// </summary>
         /// <returns></returns>
-        Task<List<Courier>> GetAllFreeAsync();
+        IQueryable<Courier> GetAllFreeAsync();
     }
 }
