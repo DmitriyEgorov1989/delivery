@@ -1,10 +1,14 @@
 using DeliveryApp.Api;
 using DeliveryApp.Core.Domain.DependencyInjection;
+using DeliveryApp.Infrastructure.Adapters.Postgres.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//DependencyInjection
+//DI DomainService
 builder.Services.AddDomainService();
+
+//DI DataBaseService
+builder.Services.AddDataBaseServices(builder.Configuration);
 
 // Health Checks
 builder.Services.AddHealthChecks();
@@ -21,7 +25,6 @@ builder.Services.AddCors(options =>
 
 // Configuration
 builder.Services.ConfigureOptions<SettingsSetup>();
-var connectionString = builder.Configuration["CONNECTION_STRING"];
 
 var app = builder.Build();
 
