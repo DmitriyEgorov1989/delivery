@@ -33,8 +33,4 @@
         <ProjectReference Include="..\DeliveryApp.Core\DeliveryApp.Core.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Adapters\Postgres\Configurations\" />
-    </ItemGroup>
-
 </Project>

@@ -13,19 +13,20 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.DependencyInjection
         {
             var connectionString = configuration.GetConnectionString("CONNECTION_STRING");
 
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<ApplicationDbContext>((_, options) =>
             {
-                options.UseNpgsql(connectionString);
+                options.UseNpgsql(connectionString,
+                    sqlOptions => { sqlOptions.MigrationsAssembly("DeliveryApp.Infrastructure"); });
+                options.EnableSensitiveDataLogging();
             });
-
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.InitRepositories();
         }
         private static void InitRepositories(this IServiceCollection services)
         {
-            services.AddTransient<ICourierRepository, CourierRepository>();
-            services.AddTransient<IOrderRepository, OrderRepository>();
+            services.AddScoped<ICourierRepository, CourierRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
         }
     }
 }

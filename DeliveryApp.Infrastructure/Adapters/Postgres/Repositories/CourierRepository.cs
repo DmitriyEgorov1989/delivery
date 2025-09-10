@@ -11,7 +11,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
 
         public CourierRepository(ApplicationDbContext dbContext)
         {
-            _dbContext = dbContext; throw new ArgumentNullException(nameof(dbContext));
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
         public async Task AddAsync(Courier courier)

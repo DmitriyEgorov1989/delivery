@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.NewFolder;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
 using Primitives;
 using System.Diagnostics.CodeAnalysis;
@@ -54,6 +55,14 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
         /// <param name="location">Локация доставки</param>
         /// <param name="volume">Обьем заказа</param>
         /// <returns></returns>
+
+        ///<summary>
+        /// Навигационное свойство
+        /// </summary>
+        public StoragePlace StoragePlace { get; }
+
+        public Guid? StoragePlaceId { get; }
+
         public static Result<Order, Error> Create(Guid orderid, Location location, int volume)
         {
             if (orderid == Guid.Empty)

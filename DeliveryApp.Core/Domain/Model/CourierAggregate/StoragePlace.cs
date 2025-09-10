@@ -1,4 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using Primitives;
 using System.Diagnostics.CodeAnalysis;
 
@@ -48,6 +50,16 @@ namespace DeliveryApp.Core.Domain.Model.NewFolder
         /// <param name="Название"></param>
         /// <param volume="Обьем заказа"></param>
         /// <returns></returns>
+
+        public Courier Courier { get; }
+
+        public Guid CourierId { get; }
+
+        /// <summary>
+        /// Навигационное свойство
+        /// </summary>
+        public Order Order { get; }
+
         public static Result<StoragePlace, Error> Create(string name, int volume)
         {
             if (name == null || name == "")

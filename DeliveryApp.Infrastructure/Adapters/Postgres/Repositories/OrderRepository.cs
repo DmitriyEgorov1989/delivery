@@ -12,7 +12,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
 
         public OrderRepository(ApplicationDbContext dbContext)
         {
-            _dbContext = dbContext; throw new ArgumentNullException(nameof(dbContext));
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
         public async Task AddAsync(Order order)
