@@ -23,11 +23,11 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
             await _dbContext.Couriers.AddAsync(courier);
         }
 
-        public IQueryable<Courier> GetAllFreeAsync()
+        public IQueryable<Courier> GetAllFree()
         {
-            return _dbContext.Couriers.Where(x => x.StoragePlaces.All(sp => sp.OrderId == null))
-                                                        .Include(c => c.StoragePlaces)
-                                                        .AsNoTracking();
+            return _dbContext.Couriers.Include(c => c.StoragePlaces)
+                                      .Where(x => x.StoragePlaces.Any(sp => sp.OrderId == null))
+                                      .AsNoTracking();
         }
 
         public async Task<Maybe<Courier>> GetByIdAsync(Guid courierId)

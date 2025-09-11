@@ -33,6 +33,6 @@ namespace DeliveryApp.Core.Ports
         /// Получение всех свободных курьеров
         /// </summary>
         /// <returns></returns>
-        IQueryable<Courier> GetAllFreeAsync();
+        IQueryable<Courier> GetAllFree();
     }
 }

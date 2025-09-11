@@ -9,7 +9,6 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
 {
     public class Courier : Aggregate<Guid>
     {
-        private static readonly StoragePlace storageDefault = StoragePlace.Create("Сумка", 10).Value;
         /// <summary>
         /// ctr
         /// </summary>
@@ -75,6 +74,7 @@ namespace DeliveryApp.Core.Domain.Model.CourierAggregate
             {
                 return GeneralErrors.ValueIsInvalid(nameof(location));
             }
+            var storageDefault = StoragePlace.Create("Сумка", 10).Value;
 
             return new Courier(name, speed, location, storageDefault);
         }

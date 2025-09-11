@@ -8,6 +8,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Configurations.CourierAgg
     {
         public void Configure(EntityTypeBuilder<Courier> entityTypeBuilder)
         {
+            entityTypeBuilder.ToTable("courier");
 
             entityTypeBuilder.HasKey(e => e.Id);
 
