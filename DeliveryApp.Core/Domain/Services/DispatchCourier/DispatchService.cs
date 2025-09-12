@@ -26,7 +26,6 @@ namespace DeliveryApp.Core.Domain.Services.DispatchCourier
                 return GeneralErrors.NotFound();
             }
             var courier = couriers.OrderBy(x => x.CalculateTimeToLocation(order.Location).Value).ToList()[0];
-            courier.TakeOrder(order);
 
             return courier;
         }
