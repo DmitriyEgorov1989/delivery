@@ -33,7 +33,7 @@ namespace DeliveryApp.Infrastructure.Postgres.Migrations
                     coordinate_x = table.Column<int>(type: "integer", nullable: true),
                     coordinate_y = table.Column<int>(type: "integer", nullable: true),
                     volume = table.Column<int>(type: "integer", nullable: false),
-                    order_status = table.Column<string>(type: "text", nullable: true),
+                    order_status = table.Column<string>(type: "text", nullable: false),
                     courier_id = table.Column<Guid>(type: "uuid", nullable: true),
                     storage_place_id = table.Column<Guid>(type: "uuid", nullable: true)
                 },

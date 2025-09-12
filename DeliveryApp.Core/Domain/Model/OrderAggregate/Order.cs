@@ -20,7 +20,7 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
         /// <param name="location"></param>
         /// <param name="volume"></param>
         [ExcludeFromCodeCoverage]
-        public Order(Guid orderId, Location location, int volume)
+        public Order(Guid orderId, Location location, int volume) : this()
         {
             Id = orderId;
             Status = OrderStatus.Created;
@@ -61,6 +61,9 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
         /// </summary>
         public StoragePlace StoragePlace { get; }
 
+        /// <summary>
+        /// FK
+        /// </summary>
         public Guid? StoragePlaceId { get; }
 
         public static Result<Order, Error> Create(Guid orderid, Location location, int volume)

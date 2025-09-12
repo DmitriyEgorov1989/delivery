@@ -49,10 +49,13 @@ namespace DeliveryApp.Core.Domain.Model.NewFolder
         /// </summary>
         /// <param name="Название"></param>
         /// <param volume="Обьем заказа"></param>
-        /// <returns></returns>
 
+        /// <returns></returns>
         public Courier Courier { get; }
 
+        /// <summary>
+        /// FK
+        /// </summary>
         public Guid CourierId { get; }
 
         /// <summary>

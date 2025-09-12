@@ -27,7 +27,7 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
         /// <summary>
         /// Название
         /// </summary>
-        public string Name { get; }
+        public string Name { get; private set; }
 
         protected override IEnumerable<object> GetEqualityComponents()
         {

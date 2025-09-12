@@ -24,9 +24,9 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
             await _dbContext.Orders.AddAsync(order);
         }
 
-        public IQueryable<Order> GetAllAssignedAsync()
+        public IQueryable<Order> GetAllAssigned()
         {
-            return _dbContext.Orders.Where(o => o.Status == OrderStatus.Assigned);
+            return _dbContext.Orders.Where(o => o.Status.Name == OrderStatus.Assigned.Name);
         }
 
         public async Task<Maybe<Order>> GetByIdAsync(Guid orderId)
@@ -42,7 +42,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
 
         public async Task<Maybe<Order>> GetCreated()
         {
-            var order = await _dbContext.Orders.FirstAsync(o => o.Status == OrderStatus.Created);
+            var order = await _dbContext.Orders.FirstAsync(o => o.Status.Name == OrderStatus.Created.Name);
 
             return order ?? Maybe<Order>.None;
         }

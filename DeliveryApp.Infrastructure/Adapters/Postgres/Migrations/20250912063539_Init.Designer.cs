@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DeliveryApp.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250910162341_Init")]
+    [Migration("20250912063539_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -188,7 +188,8 @@ namespace DeliveryApp.Infrastructure.Postgres.Migrations
 
                     b.Navigation("Location");
 
-                    b.Navigation("Status");
+                    b.Navigation("Status")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DeliveryApp.Core.Domain.Model.CourierAggregate.Courier", b =>

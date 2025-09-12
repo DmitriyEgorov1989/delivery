@@ -185,7 +185,8 @@ namespace DeliveryApp.Infrastructure.Postgres.Migrations
 
                     b.Navigation("Location");
 
-                    b.Navigation("Status");
+                    b.Navigation("Status")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DeliveryApp.Core.Domain.Model.CourierAggregate.Courier", b =>

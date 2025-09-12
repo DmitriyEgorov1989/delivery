@@ -31,7 +31,9 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Configurations.OrderAggre
                 .OwnsOne(e => e.Status, l =>
                 {
                     l.Property(s => s.Name).HasColumnName("order_status").IsRequired();
+                    l.WithOwner();
                 });
+            entityTypeBuilder.Navigation(e => e.Status).IsRequired();
 
             entityTypeBuilder
                 .Property(e => e.Volume)
