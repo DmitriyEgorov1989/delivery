@@ -9,7 +9,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.DependencyInjection
 {
     public static class DependencyInjection
     {
-        public static void AddDataBaseServices(this IServiceCollection services, IConfiguration configuration)
+        public static void AddDBPostgresServices(this IServiceCollection services, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("CONNECTION_STRING");
 

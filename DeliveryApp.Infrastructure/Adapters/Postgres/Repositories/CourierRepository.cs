@@ -23,7 +23,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
             await _dbContext.Couriers.AddAsync(courier);
         }
 
-        public IQueryable<Courier> GetAllFree()
+        public IEnumerable<Courier> GetAllFree()
         {
             return _dbContext.Couriers.Include(c => c.StoragePlaces)
                                       .Where(x => x.StoragePlaces.Any(sp => sp.OrderId == null))
@@ -36,7 +36,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
                                                    .Include(c => c.StoragePlaces)
                                                    .FirstOrDefaultAsync();
 
-            return courier ?? Maybe<Courier>.None;
+            return Maybe.From(courier);
         }
 
         public void Update(Courier courier)

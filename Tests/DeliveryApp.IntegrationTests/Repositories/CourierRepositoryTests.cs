@@ -99,8 +99,8 @@ namespace DeliveryApp.IntegrationTests.Repositories
             await courierRepository.AddAsync(courierFree.Value);
 
             await unitOfWork.SaveChangesAsync();
-            var couriersFromDb = await courierRepository.GetAllFree()
-                                                .ToListAsync();
+            var couriersFromDb = courierRepository.GetAllFree()
+                                                .ToList();
 
             //Assert);
             couriersFromDb.Count.Should().Be(1);

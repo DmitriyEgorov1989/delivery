@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDomainService();
 
 //DI DataBaseService
-builder.Services.AddDataBaseServices(builder.Configuration);
+builder.Services.AddDBPostgresServices(builder.Configuration);
 
 // Health Checks
 builder.Services.AddHealthChecks();

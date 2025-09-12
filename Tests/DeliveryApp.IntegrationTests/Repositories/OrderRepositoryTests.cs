@@ -119,8 +119,8 @@ namespace DeliveryApp.IntegrationTests.Repositories
             await _unitOfWork.SaveChangesAsync();
 
             //Act
-            var resultFromDb = await _orderRepository.GetAllAssigned()
-                                                     .ToListAsync();
+            var resultFromDb = _orderRepository.GetAllAssigned()
+                                                     .ToList();
 
             //Aseert
             resultFromDb.Count.Should().Be(1);

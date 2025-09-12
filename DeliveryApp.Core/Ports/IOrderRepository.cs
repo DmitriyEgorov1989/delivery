@@ -39,6 +39,6 @@ namespace DeliveryApp.Core.Ports
         /// Получение списка назначенных заказов
         /// </summary>
         /// <returns></returns>
-        IQueryable<Order> GetAllAssigned();
+        IEnumerable<Order> GetAllAssigned();
     }
 }
