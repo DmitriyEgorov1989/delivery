@@ -1,6 +1,22 @@
 using DeliveryApp.Api;
+using DeliveryApp.Core.Domain.DependencyInjection;
+using DeliveryApp.Core.Ports;
+using DeliveryApp.Infrastructure.Adapters.Postgres;
+using DeliveryApp.Infrastructure.Adapters.Postgres.DependencyInjection;
+using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
+using Primitives;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//DI DomainService
+builder.Services.AddDomainService();
+
+//DI Unit of Work
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+//DI Repositories
+builder.Services.AddScoped<ICourierRepository, CourierRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 // Health Checks
 builder.Services.AddHealthChecks();
@@ -17,16 +33,20 @@ builder.Services.AddCors(options =>
 
 // Configuration
 builder.Services.ConfigureOptions<SettingsSetup>();
-var connectionString = builder.Configuration["CONNECTION_STRING"];
+builder.Services.AddDBPostgres(builder.Configuration);
 
 var app = builder.Build();
 
 // -----------------------------------
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
+{
     app.UseDeveloperExceptionPage();
+}
 else
+{
     app.UseHsts();
+}
 
 app.UseHealthChecks("/health");
 app.UseRouting();
