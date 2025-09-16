@@ -40,7 +40,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
             return Maybe.From(order);
         }
 
-        public async Task<Maybe<Order>> GetCreated()
+        public async Task<Maybe<Order>> GetCreatedAsync()
         {
             var order = await _dbContext.Orders.FirstAsync(o => o.Status.Name == OrderStatus.Created.Name);
 

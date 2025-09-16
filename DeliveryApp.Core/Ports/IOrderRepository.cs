@@ -33,7 +33,7 @@ namespace DeliveryApp.Core.Ports
         /// Получение любого заказа со статусом Created
         /// </summary>
         /// <returns></returns>
-        Task<Maybe<Order>> GetCreated();
+        Task<Maybe<Order>> GetCreatedAsync();
 
         /// <summary>
         /// Получение списка назначенных заказов

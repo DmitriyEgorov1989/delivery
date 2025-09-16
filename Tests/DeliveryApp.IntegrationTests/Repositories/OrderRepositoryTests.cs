@@ -145,7 +145,7 @@ namespace DeliveryApp.IntegrationTests.Repositories
             await _unitOfWork.SaveChangesAsync();
 
             //Act
-            var resultFromDb = await _orderRepository.GetCreated();
+            var resultFromDb = await _orderRepository.GetCreatedAsync();
 
             //Aseert
             resultFromDb.HasValue.Should().BeTrue();
