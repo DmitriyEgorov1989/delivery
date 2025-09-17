@@ -7,12 +7,12 @@ using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Comands.CreateOrder
 {
-    public class CreateOrderHandle : IRequestHandler<CreateOrderComand, UnitResult<Error>>
+    public class CreateOrderHandler : IRequestHandler<CreateOrderComand, UnitResult<Error>>
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateOrderHandle(IOrderRepository orderRepository, IUnitOfWork unitOfWork)
+        public CreateOrderHandler(IOrderRepository orderRepository, IUnitOfWork unitOfWork)
         {
             _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));

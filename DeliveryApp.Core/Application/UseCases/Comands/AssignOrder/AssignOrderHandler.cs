@@ -6,14 +6,14 @@ using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
 {
-    public class AssignOrderHandle : IRequestHandler<AssignOrderComand, UnitResult<Error>>
+    public class AssignOrderHandler : IRequestHandler<AssignOrderComand, UnitResult<Error>>
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ICourierRepository _courierRepository;
         private readonly IDispatchService _dispatchService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public AssignOrderHandle(IOrderRepository orderRepository, ICourierRepository courierRepository, IUnitOfWork unitOfWork, IDispatchService dispatchService)
+        public AssignOrderHandler(IOrderRepository orderRepository, ICourierRepository courierRepository, IUnitOfWork unitOfWork, IDispatchService dispatchService)
         {
             _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
             _courierRepository = courierRepository ?? throw new ArgumentNullException(nameof(courierRepository));
