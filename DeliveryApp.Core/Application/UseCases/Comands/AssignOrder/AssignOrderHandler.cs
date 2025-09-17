@@ -24,7 +24,9 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
         public async Task<UnitResult<Error>> Handle(AssignOrderComand request, CancellationToken cancellationToken)
         {
             {
-                var order = await _orderRepository.GetCreatedAsync().GetValueOrThrow("Created order not found");
+                var order = await _orderRepository.GetCreatedAsync()
+                                                  .GetValueOrThrow("Created order not found");
+                
                 var couriers = _courierRepository.GetAllFree().ToList();
 
                 if (couriers.Count == 0)

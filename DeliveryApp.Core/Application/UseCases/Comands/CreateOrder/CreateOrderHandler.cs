@@ -20,7 +20,14 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.CreateOrder
 
         public async Task<UnitResult<Error>> Handle(CreateOrderComand request, CancellationToken cancellationToken)
         {
+            var getOrderResult = await _orderRepository.GetByIdAsync(request.OrderId);
+            if (getOrderResult.HasValue) return UnitResult.Success<Error>();
+
             var newOrder = Order.Create(request.OrderId, Location.CreateRandom(), request.Volume);
+            if(newOrder.IsFailure) 
+            {
+                return newOrder;
+            }
             
             await _orderRepository.AddAsync(newOrder.Value);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
