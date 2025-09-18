@@ -7,7 +7,7 @@ using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Comands.CreateOrder
 {
-    public class CreateOrderHandler : IRequestHandler<CreateOrderComand, UnitResult<Error>>
+    public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, UnitResult<Error>>
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -18,7 +18,7 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.CreateOrder
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<UnitResult<Error>> Handle(CreateOrderComand request, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
             var getOrderResult = await _orderRepository.GetByIdAsync(request.OrderId);
             if (getOrderResult.HasValue) return UnitResult.Success<Error>();

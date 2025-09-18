@@ -53,8 +53,8 @@ namespace DeliveryApp.UnitTests.Application
             _unitOfWorkMock.SaveChangesAsync().Returns(true);
 
             //Act
-            var comand = new AssignOrderComand();
-            var handler = new AssignOrderHandler(_orderRepositoryMock, _courierRepositoryMock, _unitOfWorkMock, _dispatchServiceMock);
+            var comand = new AssignOrdersCommand();
+            var handler = new AssignOrdersHandler(_orderRepositoryMock, _courierRepositoryMock, _unitOfWorkMock, _dispatchServiceMock);
             var result = await handler.Handle(comand, new CancellationToken());
 
             //Assert
@@ -75,8 +75,8 @@ namespace DeliveryApp.UnitTests.Application
             _unitOfWorkMock.SaveChangesAsync().Returns(true);
 
             //Act
-            var comand = new AssignOrderComand();
-            var handler = new AssignOrderHandler(_orderRepositoryMock, _courierRepositoryMock, _unitOfWorkMock, _dispatchServiceMock);
+            var comand = new AssignOrdersCommand();
+            var handler = new AssignOrdersHandler(_orderRepositoryMock, _courierRepositoryMock, _unitOfWorkMock, _dispatchServiceMock);
             var result = await handler.Handle(comand, new CancellationToken());
 
             //Assert

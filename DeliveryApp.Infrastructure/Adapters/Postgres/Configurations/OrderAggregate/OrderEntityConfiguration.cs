@@ -15,16 +15,16 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Configurations.OrderAggre
 
             entityTypeBuilder
                 .Property(e => e.Id)
-                .HasColumnType("id")
                 .HasColumnType("uuid")
+                .HasColumnName("id")
                 .ValueGeneratedNever()
                 .IsRequired();
 
             entityTypeBuilder
                 .OwnsOne(e => e.Location, l =>
                 {
-                    l.Property(c => c.X).HasColumnName("coordinate_x").IsRequired();
-                    l.Property(c => c.Y).HasColumnName("coordinate_y").IsRequired();
+                    l.Property(c => c.X).HasColumnName("location_x").IsRequired();
+                    l.Property(c => c.Y).HasColumnName("location_y").IsRequired();
                 });
 
             entityTypeBuilder
@@ -44,18 +44,6 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Configurations.OrderAggre
                 .Property(e => e.CourierId)
                 .HasColumnName("courier_id")
                 .HasColumnType("uuid");
-
-
-            entityTypeBuilder
-                .Property(e => e.StoragePlaceId)
-                .HasColumnName("storage_place_id")
-                .HasColumnType("uuid");
-
-            entityTypeBuilder
-                .HasOne(sp => sp.StoragePlace)
-                .WithOne(o => o.Order)
-                .HasForeignKey<StoragePlace>(o => o.OrderId)
-                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

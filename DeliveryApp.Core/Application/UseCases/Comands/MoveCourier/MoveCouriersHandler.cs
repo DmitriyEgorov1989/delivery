@@ -5,20 +5,20 @@ using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Comands.MoveCourier
 {
-    public class MoveCourierHandler : IRequestHandler<MoveCourierCommand, UnitResult<Error>>
+    public class MoveCouriersHandler : IRequestHandler<MoveCouriersCommand, UnitResult<Error>>
     {
         private readonly ICourierRepository _courierRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public MoveCourierHandler(ICourierRepository courierRepository, IUnitOfWork unitOfWork, IOrderRepository orderRepository)
+        public MoveCouriersHandler(ICourierRepository courierRepository, IUnitOfWork unitOfWork, IOrderRepository orderRepository)
         {
             _courierRepository = courierRepository ?? throw new ArgumentNullException(nameof(courierRepository));
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<UnitResult<Error>> Handle(MoveCourierCommand request, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> Handle(MoveCouriersCommand request, CancellationToken cancellationToken)
         {
             var ordersAssigned = _orderRepository.GetAllAssigned().ToList();
             if (ordersAssigned.Count == 0) return GeneralErrors.ValueIsRequired(nameof(ordersAssigned));

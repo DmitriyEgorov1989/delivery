@@ -54,18 +54,7 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
         /// <param name="orderid">Id заказа</param>
         /// <param name="location">Локация доставки</param>
         /// <param name="volume">Обьем заказа</param>
-        /// <returns></returns>
-
-        ///<summary>
-        /// Навигационное свойство
-        /// </summary>
-        public StoragePlace StoragePlace { get; }
-
-        /// <summary>
-        /// FK
-        /// </summary>
-        public Guid? StoragePlaceId { get; }
-
+        /// <returns></returns>}
         public static Result<Order, Error> Create(Guid orderid, Location location, int volume)
         {
             if (orderid == Guid.Empty)

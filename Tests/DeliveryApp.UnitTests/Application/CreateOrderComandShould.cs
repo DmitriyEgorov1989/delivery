@@ -37,7 +37,7 @@ namespace DeliveryApp.UnitTests.Application
             _unitOfWorkMock.SaveChangesAsync().Returns(Task.FromResult(true));
 
             //Act
-            var createOrderComand = CreateOrderComand.Create(Guid.NewGuid(), "Тест", 3);
+            var createOrderComand = CreateOrderCommand.Create(Guid.NewGuid(), "Тест", 3);
             createOrderComand.IsSuccess.Should().BeTrue();
             var handle = new CreateOrderHandler(_orderRepositoryMock, _unitOfWorkMock);
             var result = await handle.Handle(createOrderComand.Value, new CancellationToken());
@@ -57,7 +57,7 @@ namespace DeliveryApp.UnitTests.Application
             _unitOfWorkMock.SaveChangesAsync().Returns(Task.FromResult(true));
 
             //Act
-            var createOrderComand = CreateOrderComand.Create(Guid.NewGuid(), "Тест", 3);
+            var createOrderComand = CreateOrderCommand.Create(Guid.NewGuid(), "Тест", 3);
             createOrderComand.IsSuccess.Should().BeTrue();
             var handle = new CreateOrderHandler(_orderRepositoryMock, _unitOfWorkMock);
             var result = await handle.Handle(createOrderComand.Value, new CancellationToken());

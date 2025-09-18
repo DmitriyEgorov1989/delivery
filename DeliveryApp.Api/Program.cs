@@ -1,9 +1,15 @@
+using CSharpFunctionalExtensions;
 using DeliveryApp.Api;
+using DeliveryApp.Api.Adapters.BackgroundJobs;
+using DeliveryApp.Core.Application.UseCases.Comands.AssignOrder;
+using DeliveryApp.Core.Application.UseCases.Comands.CreateOrder;
+using DeliveryApp.Core.Application.UseCases.Comands.MoveCourier;
 using DeliveryApp.Core.Domain.DependencyInjection;
 using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.DependencyInjection;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
+using MediatR;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -11,6 +17,7 @@ using OpenApi.Filters;
 using OpenApi.Formatters;
 using OpenApi.OpenApi;
 using Primitives;
+using Quartz;
 using System.Reflection;
 
 
@@ -25,6 +32,19 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 //DI Repositories
 builder.Services.AddScoped<ICourierRepository, CourierRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
+//Comands
+builder.Services.AddScoped<IRequestHandler<CreateOrderCommand, UnitResult<Error>>, CreateOrderHandler>();
+builder.Services.AddScoped<IRequestHandler<MoveCouriersCommand, UnitResult<Error>>, MoveCouriersHandler>();
+builder.Services.AddScoped<IRequestHandler<AssignOrdersCommand, UnitResult<Error>>, AssignOrdersHandler>();
+
+
+
+//Mediatr
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
+});
 
 // Health Checks
 builder.Services.AddHealthChecks();
@@ -54,7 +74,6 @@ builder.Services.AddControllers(options => { options.InputFormatters.Insert(0, n
         });
     });
 
-
 // Swagger
 builder.Services.AddSwaggerGen(options =>
 {
@@ -76,6 +95,27 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<GeneratePathParamsValidationFilter>();
 });
 builder.Services.AddSwaggerGenNewtonsoftSupport();
+
+// CRON Jobs
+builder.Services.AddQuartz(configure =>
+{
+    var assignOrdersJobKey = new JobKey(nameof(AssignOrdersJob));
+    var moveCouriersJobKey = new JobKey(nameof(MoveCouriersJob));
+    configure
+        .AddJob<AssignOrdersJob>(assignOrdersJobKey)
+        .AddTrigger(
+            trigger => trigger.ForJob(assignOrdersJobKey)
+                .WithSimpleSchedule(
+                    schedule => schedule.WithIntervalInSeconds(1)
+                        .RepeatForever()))
+        .AddJob<MoveCouriersJob>(moveCouriersJobKey)
+        .AddTrigger(
+            trigger => trigger.ForJob(moveCouriersJobKey)
+                .WithSimpleSchedule(
+                    schedule => schedule.WithIntervalInSeconds(2)
+                        .RepeatForever()));
+});
+builder.Services.AddQuartzHostedService();
 
 
 var app = builder.Build();
@@ -104,11 +144,11 @@ app.UseSwagger(c => { c.RouteTemplate = "openapi/{documentName}/openapi.json"; }
 
 app.UseCors();
 app.MapControllers();
-// Apply Migrations
-// using (var scope = app.Services.CreateScope())
-// {
-//     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//     db.Database.Migrate();
-// }
+//Apply Migrations
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//    db.Database.Migrate();
+//}
 
 app.Run();

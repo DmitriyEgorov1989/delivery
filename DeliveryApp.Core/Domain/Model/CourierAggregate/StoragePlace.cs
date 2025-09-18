@@ -49,20 +49,7 @@ namespace DeliveryApp.Core.Domain.Model.NewFolder
         /// </summary>
         /// <param name="Название"></param>
         /// <param volume="Обьем заказа"></param>
-
-        /// <returns></returns>
-        public Courier Courier { get; }
-
-        /// <summary>
-        /// FK
-        /// </summary>
-        public Guid CourierId { get; }
-
-        /// <summary>
-        /// Навигационное свойство
-        /// </summary>
-        public Order Order { get; }
-
+        /// <returns>
         public static Result<StoragePlace, Error> Create(string name, int volume)
         {
             if (name == null || name == string.Empty)

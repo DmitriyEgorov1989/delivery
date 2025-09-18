@@ -6,14 +6,14 @@ using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
 {
-    public class AssignOrderHandler : IRequestHandler<AssignOrderComand, UnitResult<Error>>
+    public class AssignOrdersHandler : IRequestHandler<AssignOrdersCommand, UnitResult<Error>>
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ICourierRepository _courierRepository;
         private readonly IDispatchService _dispatchService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public AssignOrderHandler(IOrderRepository orderRepository, ICourierRepository courierRepository, IUnitOfWork unitOfWork, IDispatchService dispatchService)
+        public AssignOrdersHandler(IOrderRepository orderRepository, ICourierRepository courierRepository, IUnitOfWork unitOfWork, IDispatchService dispatchService)
         {
             _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
             _courierRepository = courierRepository ?? throw new ArgumentNullException(nameof(courierRepository));
@@ -21,21 +21,27 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
             _dispatchService = dispatchService ?? throw new ArgumentNullException(nameof(dispatchService));
         }
 
-        public async Task<UnitResult<Error>> Handle(AssignOrderComand request, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> Handle(AssignOrdersCommand request, CancellationToken cancellationToken)
         {
             {
-                var order = await _orderRepository.GetCreatedAsync()
-                                                  .GetValueOrThrow("Created order not found");
-                
+                var order = await _orderRepository.GetCreatedAsync();
+
+                if (order == null)
+                {
+                    return UnitResult.Success<Error>();
+                }
+
+                var createOrder = order.Value;
+            
                 var couriers = _courierRepository.GetAllFree().ToList();
 
                 if (couriers.Count == 0)
                 {
-                    return UnitResult.Failure<Error>(GeneralErrors.ValueIsInvalid("Free couriers nit found"));
+                    return UnitResult.Success<Error>();
                 }
 
                 //Выбираем подходящего курьера
-                var courierSuitable = _dispatchService.Scoring(order, couriers);
+                var courierSuitable = _dispatchService.Scoring(createOrder, couriers);
 
                 //Если курьер не найден возвращаем неудачу
                 if (courierSuitable.IsFailure)
@@ -43,8 +49,8 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
                     return courierSuitable;
                 }
                 
-                var orderAssign = order.Assign(courierSuitable.Value.Id);
-                var courierAssign = courierSuitable.Value.TakeOrder(order);
+                var orderAssign = createOrder.Assign(courierSuitable.Value.Id);
+                var courierAssign = courierSuitable.Value.TakeOrder(createOrder);
 
                 if (courierAssign.IsFailure)
                 {
@@ -56,7 +62,7 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
                 }
                 
                 _courierRepository.Update(courierSuitable.Value);
-                _orderRepository.Update(order);
+                _orderRepository.Update(createOrder);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -8,7 +8,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Configurations.CourierAgg
     {
         public void Configure(EntityTypeBuilder<StoragePlace> entityTypeBuilder)
         {
-            entityTypeBuilder.ToTable("storagePlaces");
+            entityTypeBuilder.ToTable("storage_places");
 
             entityTypeBuilder.HasKey(x => x.Id);
 
@@ -35,7 +35,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Configurations.CourierAgg
                 .HasColumnType("uuid");
 
             entityTypeBuilder
-                .Property(e => e.CourierId)
+                .Property("CourierId")
                 .HasColumnName("courier_id")
                 .HasColumnType("uuid")
                 .IsRequired();
