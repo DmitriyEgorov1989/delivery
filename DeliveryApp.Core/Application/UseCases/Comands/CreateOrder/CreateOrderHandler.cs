@@ -23,13 +23,14 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.CreateOrder
             var getOrderResult = await _orderRepository.GetByIdAsync(request.OrderId);
             if (getOrderResult.HasValue) return UnitResult.Success<Error>();
 
-            var newOrder = Order.Create(request.OrderId, Location.CreateRandom(), request.Volume);
-            if(newOrder.IsFailure) 
+            var createResultOrder = Order.Create(request.OrderId, Location.CreateRandom(), request.Volume);
+            if(createResultOrder.IsFailure) 
             {
-                return newOrder;
+                return createResultOrder;
             }
+            var newOrder = createResultOrder.Value;
             
-            await _orderRepository.AddAsync(newOrder.Value);
+            await _orderRepository.AddAsync(newOrder);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return UnitResult.Success<Error>();         

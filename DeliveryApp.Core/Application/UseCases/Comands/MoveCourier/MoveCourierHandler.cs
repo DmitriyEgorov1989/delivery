@@ -23,28 +23,33 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.MoveCourier
             var ordersAssigned = _orderRepository.GetAllAssigned().ToList();
             if (ordersAssigned.Count == 0) return GeneralErrors.ValueIsRequired(nameof(ordersAssigned));
 
-           foreach (var order in ordersAssigned) 
+            foreach (var order in ordersAssigned)
             {
 
-                if (order.CourierId==null) return GeneralErrors.ValueIsInvalid(nameof(order.CourierId));
-                
-                var courier = await _courierRepository.GetByIdAsync((Guid)order.CourierId)
-                                                      .GetValueOrThrow($"Courier with id {order.CourierId} not found");
+                if (order.CourierId == null) return GeneralErrors.ValueIsInvalid(nameof(order.CourierId));
 
+                var maybeCourier = await _courierRepository.GetByIdAsync((Guid)order.CourierId);
+                if (maybeCourier == null) return UnitResult.Failure(GeneralErrors.ValueIsRequired(nameof(order.CourierId)));
+
+                var courier = maybeCourier.Value;
                 var courierMoveResult = courier.Move(order.Location);
 
                 if (courierMoveResult.IsFailure) return courierMoveResult;
 
                 if (courier.Location == order.Location)
                 {
-                    courier.СompleteOrder(order);
-                    order.Complete();
+                    var resultCompleteOrderCourier = courier.СompleteOrder(order);
+                    if (resultCompleteOrderCourier.IsFailure) return UnitResult.Failure(GeneralErrors.ValueIsInvalid(nameof(order)));
+
+                    var resultCompleteOrder = order.Complete();
+                    if(resultCompleteOrder.IsFailure) return UnitResult.Failure(GeneralErrors.ValueIsInvalid(nameof(order)));
+
+                    _orderRepository.Update(order);
                 }
                 _courierRepository.Update(courier);
-                _orderRepository.Update(order);
-            };
+            }
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            
+
             return UnitResult.Success<Error>();
         }
     }

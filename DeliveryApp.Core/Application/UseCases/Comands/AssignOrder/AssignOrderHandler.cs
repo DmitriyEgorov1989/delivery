@@ -24,27 +24,33 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
         public async Task<UnitResult<Error>> Handle(AssignOrderComand request, CancellationToken cancellationToken)
         {
             {
-                var order = await _orderRepository.GetCreatedAsync()
-                                                  .GetValueOrThrow("Created order not found");
+                var maybeOrder = await _orderRepository.GetCreatedAsync();
+                
+                if (maybeOrder.HasNoValue)
+                {
+                    return UnitResult.Success<Error>();
+                }
+                var order = maybeOrder.Value;
                 
                 var couriers = _courierRepository.GetAllFree().ToList();
 
                 if (couriers.Count == 0)
                 {
-                    return UnitResult.Failure<Error>(GeneralErrors.ValueIsInvalid("Free couriers nit found"));
+                    return new Error("Not.Free.Couriers","Free couriers nit found");
                 }
 
                 //Выбираем подходящего курьера
-                var courierSuitable = _dispatchService.Scoring(order, couriers);
+                var scoringResult = _dispatchService.Scoring(order, couriers);
 
                 //Если курьер не найден возвращаем неудачу
-                if (courierSuitable.IsFailure)
+                if (scoringResult.IsFailure)
                 {
-                    return courierSuitable;
+                    return scoringResult;
                 }
+                var courierSuitable = scoringResult.Value;
                 
-                var orderAssign = order.Assign(courierSuitable.Value.Id);
-                var courierAssign = courierSuitable.Value.TakeOrder(order);
+                var orderAssign = order.Assign(courierSuitable.Id);
+                var courierAssign = courierSuitable.TakeOrder(order);
 
                 if (courierAssign.IsFailure)
                 {
@@ -52,10 +58,10 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
                 }
                 if (orderAssign.IsFailure)
                 {
-                    return courierAssign;
+                    return orderAssign;
                 }
                 
-                _courierRepository.Update(courierSuitable.Value);
+                _courierRepository.Update(courierSuitable);
                 _orderRepository.Update(order);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
