@@ -2,6 +2,7 @@
 using DeliveryApp.Core.Domain.Services.DispatchCourier;
 using DeliveryApp.Core.Ports;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
@@ -13,7 +14,10 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
         private readonly IDispatchService _dispatchService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public AssignOrdersHandler(IOrderRepository orderRepository, ICourierRepository courierRepository, IUnitOfWork unitOfWork, IDispatchService dispatchService)
+        public AssignOrdersHandler(IOrderRepository orderRepository,
+            ICourierRepository courierRepository,
+            IUnitOfWork unitOfWork,
+            IDispatchService dispatchService)
         {
             _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
             _courierRepository = courierRepository ?? throw new ArgumentNullException(nameof(courierRepository));
@@ -24,20 +28,20 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
         public async Task<UnitResult<Error>> Handle(AssignOrdersCommand request, CancellationToken cancellationToken)
         {
             {
-                var order = await _orderRepository.GetCreatedAsync();
+                var maybeOrder = await _orderRepository.GetCreatedAsync();
 
-                if (order == null)
+                if (maybeOrder.HasNoValue)
                 {
                     return UnitResult.Success<Error>();
                 }
 
-                var createOrder = order.Value;
-            
+                var createOrder = maybeOrder.Value;
+
                 var couriers = _courierRepository.GetAllFree().ToList();
 
                 if (couriers.Count == 0)
                 {
-                    return UnitResult.Success<Error>();
+                    return new Error("Not_Available_Couriers", "Нет свободных курьеров");
                 }
 
                 //Выбираем подходящего курьера
@@ -48,22 +52,23 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
                 {
                     return courierSuitable;
                 }
-                
+
                 var orderAssign = createOrder.Assign(courierSuitable.Value.Id);
+
+                if (orderAssign.IsFailure)
+                {
+                    return orderAssign;
+                }
+
                 var courierAssign = courierSuitable.Value.TakeOrder(createOrder);
 
                 if (courierAssign.IsFailure)
                 {
                     return courierAssign;
                 }
-                if (orderAssign.IsFailure)
-                {
-                    return courierAssign;
-                }
-                
+
                 _courierRepository.Update(courierSuitable.Value);
                 _orderRepository.Update(createOrder);
-
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return UnitResult.Success<Error>();

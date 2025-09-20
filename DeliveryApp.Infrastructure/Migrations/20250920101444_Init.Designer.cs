@@ -3,6 +3,7 @@ using System;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DeliveryApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250920101444_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,7 +160,9 @@ namespace DeliveryApp.Infrastructure.Migrations
 
                             b1.Property<string>("Name")
                                 .IsRequired()
+                                .ValueGeneratedOnAdd()
                                 .HasColumnType("text")
+                                .HasDefaultValue("created")
                                 .HasColumnName("order_status");
 
                             b1.HasKey("OrderId");

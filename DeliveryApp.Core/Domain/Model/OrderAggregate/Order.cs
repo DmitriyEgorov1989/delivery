@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.NewFolder;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
 using Primitives;
@@ -79,24 +80,19 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
         /// </summary>
         /// <param name="courier"></param>
         /// <returns></returns>
-        public UnitResult<Error> Assign(Guid courierId)
+        public UnitResult<Error> Assign(Guid? courierId)
         {
-            if (courierId == Guid.Empty)
+            if (courierId == null)
             {
-                return GeneralErrors.ValueIsInvalid(nameof(courierId));
+                return UnitResult.Failure(GeneralErrors.ValueIsInvalid(nameof(courierId)));
             }
-
-            if (Status == OrderStatus.Created)
+            if (Status != OrderStatus.Created)
             {
-                Status = OrderStatus.Assigned;
-                CourierId = courierId;
+                return UnitResult.Failure(GeneralErrors.ValueIsRequired($"{nameof(Status)}"));
             }
-
-            if (Status != OrderStatus.Assigned || CourierId is null)
-            {
-                return GeneralErrors.ValueIsRequired($"{nameof(Status)} or {nameof(CourierId)}");
-            }
-
+            Status = OrderStatus.Assigned;
+            CourierId = courierId;
+         
             return UnitResult.Success<Error>();
         }
         /// <summary>

@@ -17,6 +17,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using OpenApi.Converters;
+using DeliveryApp.Core.Domain.Model.OrderAggregate;
 
 namespace OpenApi.Models
 { 
@@ -33,6 +34,8 @@ namespace OpenApi.Models
         [Required]
         [DataMember(Name="id", EmitDefaultValue=true)]
         public Guid Id { get; set; }
+
+        public OrderStatus Status { get; set; } 
 
         /// <summary>
         /// Gets or Sets Location

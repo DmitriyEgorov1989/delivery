@@ -1,6 +1,7 @@
 ﻿using DeliveryApp.Core.Domain.Model.NewFolder;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DeliveryApp.Infrastructure.Adapters.Postgres.Configurations.OrderAggregate
@@ -30,7 +31,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Configurations.OrderAggre
             entityTypeBuilder
                 .OwnsOne(e => e.Status, l =>
                 {
-                    l.Property(s => s.Name).HasColumnName("order_status").IsRequired();
+                    l.Property(s => s.Name).HasColumnName("order_status").HasDefaultValue("created").IsRequired();
                     l.WithOwner();
                 });
             entityTypeBuilder.Navigation(e => e.Status).IsRequired();

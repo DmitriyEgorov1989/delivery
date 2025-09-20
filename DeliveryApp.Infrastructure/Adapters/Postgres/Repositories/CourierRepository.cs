@@ -26,7 +26,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
         public IEnumerable<Courier> GetAllFree()
         {
             return _dbContext.Couriers.Include(c => c.StoragePlaces)
-                                      .Where(x => x.StoragePlaces.Any(sp => sp.OrderId == null))
+                                      .Where(x => x.StoragePlaces.All(sp => sp.OrderId == null))
                                       .AsNoTracking();
         }
 
@@ -35,7 +35,6 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
             var courier = await _dbContext.Couriers.Where(x => x.Id == courierId)
                                                    .Include(c => c.StoragePlaces)
                                                    .FirstOrDefaultAsync();
-
             return Maybe.From(courier);
         }
 

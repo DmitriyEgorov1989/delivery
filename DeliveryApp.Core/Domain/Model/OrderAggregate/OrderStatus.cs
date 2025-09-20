@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using System.Diagnostics.CodeAnalysis;
 
-namespace DeliveryApp.Core.Domain.Model.SharedKernel
+namespace DeliveryApp.Core.Domain.Model.OrderAggregate
 {
     public class OrderStatus : ValueObject
     {
@@ -12,13 +12,13 @@ namespace DeliveryApp.Core.Domain.Model.SharedKernel
         /// <summary>
         /// Ctr
         /// </summary>
+        [ExcludeFromCodeCoverage]
         private OrderStatus() { }
 
         /// <summary>
         /// Ctr
         /// </summary>
-        /// <param name="name">Название</param>
-        [ExcludeFromCodeCoverage]
+        /// <param name="name">Название</param
         private OrderStatus(string name) : this()
         {
             Name = name;

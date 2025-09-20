@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DeliveryApp.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,7 +34,7 @@ namespace DeliveryApp.Infrastructure.Migrations
                     location_x = table.Column<int>(type: "integer", nullable: true),
                     location_y = table.Column<int>(type: "integer", nullable: true),
                     volume = table.Column<int>(type: "integer", nullable: false),
-                    order_status = table.Column<string>(type: "text", nullable: false),
+                    order_status = table.Column<string>(type: "text", nullable: false, defaultValue: "created"),
                     courier_id = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>

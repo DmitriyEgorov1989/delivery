@@ -63,7 +63,7 @@ namespace DeliveryApp.UnitTests.Domain.Model.OrderAggregate
             //Arrange
             var orderId = Guid.NewGuid();
             var location = Location.CreateRandom();
-            var corierId = Guid.Empty;
+            Guid? corierId = null;
             var order = Order.Create(orderId, location, 3).Value;
 
             //Act

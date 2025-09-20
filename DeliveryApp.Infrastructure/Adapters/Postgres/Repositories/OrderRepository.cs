@@ -1,6 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Domain.Model.OrderAggregate;
-using DeliveryApp.Core.Domain.Model.SharedKernel;
 using DeliveryApp.Core.Ports;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,7 +25,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
 
         public IEnumerable<Order> GetAllAssigned()
         {
-            return _dbContext.Orders.Where(o => o.Status.Name == OrderStatus.Assigned.Name);
+            return _dbContext.Orders.AsNoTracking().Where(o => o.Status.Name == OrderStatus.Assigned.Name);
         }
 
         public async Task<Maybe<Order>> GetByIdAsync(Guid orderId)
@@ -49,11 +48,23 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories
 
         public void Update(Order order)
         {
-            if (order == null)
+            _dbContext.Attach(order);
+
+            var entry = _dbContext.Entry(order);
+
+            entry.Property(x => x.CourierId).IsModified = true;
+            entry.Property(x => x.Volume).IsModified = true;
+
+            var statusEntry = entry.Reference(o => o.Status).TargetEntry;
+            if (order.Status is null)
             {
-                throw new ArgumentNullException(nameof(order));
+                if (statusEntry != null)
+                    foreach (var p in statusEntry.Properties) p.IsModified = false;
             }
-            _dbContext.Orders.Update(order);
+            else
+            {             
+                statusEntry.Property(nameof(OrderStatus.Name)).IsModified = true;
+            }
         }
     }
 }

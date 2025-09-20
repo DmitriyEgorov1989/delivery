@@ -10,6 +10,7 @@ using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.DependencyInjection;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -145,10 +146,10 @@ app.UseSwagger(c => { c.RouteTemplate = "openapi/{documentName}/openapi.json"; }
 app.UseCors();
 app.MapControllers();
 //Apply Migrations
-//using (var scope = app.Services.CreateScope())
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//    db.Database.Migrate();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
 
 app.Run();
