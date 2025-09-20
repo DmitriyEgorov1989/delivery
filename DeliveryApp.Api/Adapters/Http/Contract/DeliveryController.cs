@@ -17,11 +17,26 @@ namespace DeliveryApp.Api.Adapters.Http.Contract
             _mediator = mediator;
         }
 
+        /// <summary>
+        /// Добавить курьера
+        /// </summary>
+        /// <remarks>Позволяет добавить курьера</remarks>
+        /// <param name="newCourier">Курьер</param>
+        /// <response code="201">Успешный ответ</response>
+        /// <response code="400">Ошибка валидации</response>
+        /// <response code="409">Ошибка выполнения бизнес логики</response>
+        /// <response code="0">Ошибка</response>
         public override Task<IActionResult> CreateCourier([FromBody] NewCourier newCourier)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Создать заказ
+        /// </summary>
+        /// <remarks>Позволяет создать заказ с целью тестирования</remarks>
+        /// <response code="201">Успешный ответ</response>
+        /// <response code="0">Ошибка</response>
         public override async Task<IActionResult> CreateOrder()
         {
             var orderId = Guid.NewGuid();
@@ -32,6 +47,12 @@ namespace DeliveryApp.Api.Adapters.Http.Contract
             return Conflict();
         }
 
+        /// <summary>
+        /// Получить всех курьеров
+        /// </summary>
+        /// <remarks>Позволяет получить всех курьеров</remarks>
+        /// <response code="200">Успешный ответ</response>
+        /// <response code="0">Ошибка</response>
         public override async Task<IActionResult> GetCouriers()
         {
             var query = new GetAllCouriersQuery();
@@ -48,6 +69,12 @@ namespace DeliveryApp.Api.Adapters.Http.Contract
             return Ok(couriers);
         }
 
+        /// <summary>
+        /// Получить все незавершенные заказы
+        /// </summary>
+        /// <remarks>Позволяет получить все незавершенные заказы</remarks>
+        /// <response code="200">Успешный ответ</response>
+        /// <response code="0">Ошибка</response>
         public override async Task<IActionResult> GetOrders()
         {
             var query = new GetUnfinishedOrdersQuery();

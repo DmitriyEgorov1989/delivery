@@ -94,6 +94,7 @@ builder.Services.AddSwaggerGen(options =>
         $"{AppContext.BaseDirectory}{Path.DirectorySeparatorChar}{Assembly.GetEntryAssembly()?.GetName().Name}.xml");
     options.DocumentFilter<BasePathFilter>("");
     options.OperationFilter<GeneratePathParamsValidationFilter>();
+    options.EnableAnnotations();
 });
 builder.Services.AddSwaggerGenNewtonsoftSupport();
 
@@ -146,10 +147,10 @@ app.UseSwagger(c => { c.RouteTemplate = "openapi/{documentName}/openapi.json"; }
 app.UseCors();
 app.MapControllers();
 //Apply Migrations
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//    db.Database.Migrate();
+//}
 
 app.Run();
