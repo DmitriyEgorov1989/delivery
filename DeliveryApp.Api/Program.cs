@@ -21,6 +21,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 // Health Checks
 builder.Services.AddHealthChecks();
 
+
 // Cors
 builder.Services.AddCors(options =>
 {
