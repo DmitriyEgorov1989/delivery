@@ -6,10 +6,12 @@ using DeliveryApp.Core.Application.UseCases.Comands.CreateOrder;
 using DeliveryApp.Core.Application.UseCases.Comands.MoveCourier;
 using DeliveryApp.Core.Domain.DependencyInjection;
 using DeliveryApp.Core.Ports;
+using DeliveryApp.Infrastructure.Adapters.Grpc.GeoService;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.DependencyInjection;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using MediatR;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
@@ -97,6 +99,9 @@ builder.Services.AddSwaggerGen(options =>
     options.EnableAnnotations();
 });
 builder.Services.AddSwaggerGenNewtonsoftSupport();
+
+//Grpc
+builder.Services.AddScoped<IGeoClient, Client>();
 
 // CRON Jobs
 builder.Services.AddQuartz(configure =>

@@ -17,6 +17,7 @@ namespace DeliveryApp.UnitTests.Application
     {
         private readonly IOrderRepository _orderRepositoryMock = Substitute.For<IOrderRepository>();
         private readonly IUnitOfWork _unitOfWorkMock = Substitute.For<IUnitOfWork>();
+        private readonly IGeoClient _geoClientMock = Substitute.For<IGeoClient>();
 
         private Maybe<Order> ExistedOrder()
         {
@@ -34,12 +35,17 @@ namespace DeliveryApp.UnitTests.Application
             //Arrange
             _orderRepositoryMock.GetByIdAsync(Arg.Any<Guid>())
                                 .Returns(Task.FromResult(EmptyOrder()));
-            _unitOfWorkMock.SaveChangesAsync().Returns(Task.FromResult(true));
+            _unitOfWorkMock.SaveChangesAsync()
+                                .Returns(Task.FromResult(true));
+            var location = Location.Create(1, 1).Value;
+            
+            _geoClientMock.GetLocationAsync(Arg.Any<string>(),Arg.Any<CancellationToken>())
+                                .Returns(_=>Task.FromResult(Result.Success<Location,Error>(location)));
 
             //Act
             var createOrderComand = CreateOrderCommand.Create(Guid.NewGuid(), "Тест", 3);
             createOrderComand.IsSuccess.Should().BeTrue();
-            var handle = new CreateOrderHandler(_orderRepositoryMock, _unitOfWorkMock);
+            var handle = new CreateOrderHandler(_orderRepositoryMock, _unitOfWorkMock,_geoClientMock);
             var result = await handle.Handle(createOrderComand.Value, new CancellationToken());
 
             //Assert
@@ -55,15 +61,22 @@ namespace DeliveryApp.UnitTests.Application
             _orderRepositoryMock.GetByIdAsync(Arg.Any<Guid>())
                                 .Returns(Task.FromResult(ExistedOrder()));
             _unitOfWorkMock.SaveChangesAsync().Returns(Task.FromResult(true));
+            var location = Location.Create(1, 1).Value;
+
+            _geoClientMock.GetLocationAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                                .Returns(_ => Task.FromResult(Result.Success<Location, Error>(location)));
 
             //Act
             var createOrderComand = CreateOrderCommand.Create(Guid.NewGuid(), "Тест", 3);
             createOrderComand.IsSuccess.Should().BeTrue();
-            var handle = new CreateOrderHandler(_orderRepositoryMock, _unitOfWorkMock);
+            var handle = new CreateOrderHandler(_orderRepositoryMock, _unitOfWorkMock,_geoClientMock);
             var result = await handle.Handle(createOrderComand.Value, new CancellationToken());
 
             //Assert
             result.IsSuccess.Should().BeTrue();
+            _orderRepositoryMock.Received(1);
+            _unitOfWorkMock.Received(1);
+            _geoClientMock.Received(1);
         }
     }
 }

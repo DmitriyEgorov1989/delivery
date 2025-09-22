@@ -11,11 +11,13 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.CreateOrder
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IGeoClient _geoClient;
 
-        public CreateOrderHandler(IOrderRepository orderRepository, IUnitOfWork unitOfWork)
+        public CreateOrderHandler(IOrderRepository orderRepository, IUnitOfWork unitOfWork, IGeoClient geoClient)
         {
             _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _geoClient = geoClient;
         }
 
         public async Task<UnitResult<Error>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
@@ -23,7 +25,10 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.CreateOrder
             var getOrderResult = await _orderRepository.GetByIdAsync(request.OrderId);
             if (getOrderResult.HasValue) return UnitResult.Success<Error>();
 
-            var newOrder = Order.Create(request.OrderId, Location.CreateRandom(), request.Volume);
+            var getOrderLocationResult = await _geoClient.GetLocationAsync("Аналитическая", cancellationToken);
+            if (getOrderLocationResult.IsFailure) return GeneralErrors.ValueIsInvalid("Аналитическая");
+            var orderLocation = getOrderLocationResult.Value;
+            var newOrder = Order.Create(request.OrderId, orderLocation, request.Volume);
             if(newOrder.IsFailure) 
             {
                 return newOrder;
