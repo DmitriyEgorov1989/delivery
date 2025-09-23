@@ -25,8 +25,8 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.CreateOrder
             var getOrderResult = await _orderRepository.GetByIdAsync(request.OrderId);
             if (getOrderResult.HasValue) return UnitResult.Success<Error>();
 
-            var getOrderLocationResult = await _geoClient.GetLocationAsync("Аналитическая", cancellationToken);
-            if (getOrderLocationResult.IsFailure) return GeneralErrors.ValueIsInvalid("Аналитическая");
+            var getOrderLocationResult = await _geoClient.GetLocationAsync(request.Street, cancellationToken);
+            if (getOrderLocationResult.IsFailure) return GeneralErrors.ValueIsInvalid(request.Street);
             var orderLocation = getOrderLocationResult.Value;
             var newOrder = Order.Create(request.OrderId, orderLocation, request.Volume);
             if(newOrder.IsFailure) 

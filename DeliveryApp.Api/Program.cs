@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using DeliveryApp.Api;
 using DeliveryApp.Api.Adapters.BackgroundJobs;
+using DeliveryApp.Api.Adapters.Kafka;
 using DeliveryApp.Core.Application.UseCases.Comands.AssignOrder;
 using DeliveryApp.Core.Application.UseCases.Comands.CreateOrder;
 using DeliveryApp.Core.Application.UseCases.Comands.MoveCourier;
@@ -11,8 +12,6 @@ using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.DependencyInjection;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using MediatR;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -124,6 +123,13 @@ builder.Services.AddQuartz(configure =>
 });
 builder.Services.AddQuartzHostedService();
 
+// Message Broker Consumer
+builder.Services.Configure<HostOptions>(options =>
+{
+    options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+    options.ShutdownTimeout = TimeSpan.FromSeconds(30);
+});
+builder.Services.AddHostedService<ConsumerService>();
 
 var app = builder.Build();
 

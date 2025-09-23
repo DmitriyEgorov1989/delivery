@@ -15,6 +15,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Grpc.GeoService
         private readonly MethodConfig _methodConfig;
         private readonly SocketsHttpHandler _socketsHttpHandler;
         private readonly string _url;
+        
         public Client(IOptions<Settings> options)
         {
             if (string.IsNullOrWhiteSpace(options.Value.GeoServiceGrpcHost))
