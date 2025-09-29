@@ -30,15 +30,13 @@
     </ItemGroup>
 
 	<ItemGroup>
-		<None Remove="Adapters\Grpc\GeoService\contract.proto"/>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Adapters\"/>
+		<None Remove="Adapters\Grpc\GeoService\contract.proto" />
+		<None Remove="Adapters\Kafka\Contract.proto" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Protobuf Include="Adapters\Grpc\GeoService\contract.proto" GrpcServices="Client" />
+		<Protobuf Include="Adapters\Kafka\Contract.proto" GrpcServices="None" />
 	</ItemGroup>
 
 	<ItemGroup>
