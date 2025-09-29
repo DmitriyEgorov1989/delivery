@@ -2,12 +2,15 @@ using CSharpFunctionalExtensions;
 using DeliveryApp.Api;
 using DeliveryApp.Api.Adapters.BackgroundJobs;
 using DeliveryApp.Api.Adapters.Kafka;
+using DeliveryApp.Core.Application.DomainEventHandlers;
 using DeliveryApp.Core.Application.UseCases.Comands.AssignOrder;
 using DeliveryApp.Core.Application.UseCases.Comands.CreateOrder;
 using DeliveryApp.Core.Application.UseCases.Comands.MoveCourier;
 using DeliveryApp.Core.Domain.DependencyInjection;
+using DeliveryApp.Core.Domain.Model.OrderAggregate.DomainEvents;
 using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure.Adapters.Grpc.GeoService;
+using DeliveryApp.Infrastructure.Adapters.Kafka;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.DependencyInjection;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
@@ -40,7 +43,9 @@ builder.Services.AddScoped<IRequestHandler<CreateOrderCommand, UnitResult<Error>
 builder.Services.AddScoped<IRequestHandler<MoveCouriersCommand, UnitResult<Error>>, MoveCouriersHandler>();
 builder.Services.AddScoped<IRequestHandler<AssignOrdersCommand, UnitResult<Error>>, AssignOrdersHandler>();
 
-
+//Domain Event Handlers
+builder.Services.AddScoped<INotificationHandler<OrderCreateDomainEvent>, OrderCreateDomainEventHandler>();
+builder.Services.AddScoped<INotificationHandler<OrderCompleteDomainEvent>, OrderCompleteDomainEventHandler>();
 
 //Mediatr
 builder.Services.AddMediatR(cfg =>
@@ -131,6 +136,9 @@ builder.Services.Configure<HostOptions>(options =>
     options.ShutdownTimeout = TimeSpan.FromSeconds(30);
 });
 builder.Services.AddHostedService<ConsumerService>();
+
+//Message Broker Producer
+builder.Services.AddScoped<IMessageBusProducer,Producer>(); 
 
 var app = builder.Build();
 
