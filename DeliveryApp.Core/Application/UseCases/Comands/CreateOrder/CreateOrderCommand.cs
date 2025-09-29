@@ -4,12 +4,12 @@ using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Comands.CreateOrder
 {
-    public class CreateOrderComand : IRequest<UnitResult<Error>>
+    public class CreateOrderCommand : IRequest<UnitResult<Error>>
     {
         /// <summary>
         /// Ctr
         /// <summary>
-        public CreateOrderComand(Guid orderId, string street, int volume)
+        public CreateOrderCommand(Guid orderId, string street, int volume)
         {
             OrderId = orderId;
             Street = street;
@@ -39,13 +39,13 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.CreateOrder
         /// <param name="street"> Аддрес</param>
         /// <param name="volume">Размер заказа</param>
         /// <returns></returns>
-        public static Result<CreateOrderComand, Error> Create(Guid orderId, string street, int volume)
+        public static Result<CreateOrderCommand, Error> Create(Guid orderId, string street, int volume)
         {
             if (orderId == Guid.Empty) return GeneralErrors.ValueIsRequired(nameof(OrderId));
             if (string.IsNullOrEmpty(street)) return GeneralErrors.ValueIsRequired(nameof(Street));
             if (volume <= 0) return GeneralErrors.ValueIsRequired(nameof(Volume));
 
-            return new CreateOrderComand(orderId, street, volume);
+            return new CreateOrderCommand(orderId, street, volume);
         }
     }
 }

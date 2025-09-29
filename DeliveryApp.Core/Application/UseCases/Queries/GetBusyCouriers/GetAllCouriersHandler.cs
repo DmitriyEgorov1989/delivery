@@ -5,17 +5,17 @@ using Npgsql;
 
 namespace DeliveryApp.Core.Application.UseCases.Queries.GetBusyCouriers
 {
-    public class GetBusyCouriersHandler : IRequestHandler<GetBusyCouriersQuery, GetBusyCouriersResponse>
+    public class GetAllCouriersHandler : IRequestHandler<GetAllCouriersQuery, GetAllCouriersResponse>
     {
         private readonly string _connectionString;
-        public GetBusyCouriersHandler(string connectionString)
+        public GetAllCouriersHandler(string connectionString)
         {
             _connectionString = !string.IsNullOrWhiteSpace(connectionString)
                 ? connectionString
                 : throw new ArgumentNullException(nameof(connectionString));
         }
 
-        public async Task<GetBusyCouriersResponse> Handle(GetBusyCouriersQuery request, CancellationToken cancellationToken)
+        public async Task<GetAllCouriersResponse> Handle(GetAllCouriersQuery request, CancellationToken cancellationToken)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync(cancellationToken);
@@ -35,7 +35,7 @@ namespace DeliveryApp.Core.Application.UseCases.Queries.GetBusyCouriers
                 couriers.Add(MapToCourierDto(item));
             }
             
-            return new GetBusyCouriersResponse(couriers);
+            return new GetAllCouriersResponse(couriers);
         }
 
         private CourierDto MapToCourierDto(dynamic response)

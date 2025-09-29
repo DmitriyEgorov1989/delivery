@@ -8,7 +8,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Configurations.CourierAgg
     {
         public void Configure(EntityTypeBuilder<Courier> entityTypeBuilder)
         {
-            entityTypeBuilder.ToTable("courier");
+            entityTypeBuilder.ToTable("couriers");
 
             entityTypeBuilder.HasKey(e => e.Id);
 
@@ -32,18 +32,11 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.Configurations.CourierAgg
             entityTypeBuilder
                 .OwnsOne(e => e.Location, l =>
                 {
-                    l.Property(c => c.X).HasColumnName("coordinate_x").IsRequired();
-                    l.Property(c => c.Y).HasColumnName("coordinate_y").IsRequired();
+                    l.Property(c => c.X).HasColumnName("location_x").IsRequired();
+                    l.Property(c => c.Y).HasColumnName("location_y").IsRequired();
                 });
 
             entityTypeBuilder.Navigation(e => e.Location).IsRequired();
-
-            entityTypeBuilder
-                .HasMany(e => e.StoragePlaces)
-                .WithOne(c => c.Courier)
-                .HasForeignKey(sp => sp.CourierId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

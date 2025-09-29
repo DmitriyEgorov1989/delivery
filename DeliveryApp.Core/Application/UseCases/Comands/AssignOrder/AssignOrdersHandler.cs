@@ -2,18 +2,22 @@
 using DeliveryApp.Core.Domain.Services.DispatchCourier;
 using DeliveryApp.Core.Ports;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
 {
-    public class AssignOrderHandler : IRequestHandler<AssignOrderComand, UnitResult<Error>>
+    public class AssignOrdersHandler : IRequestHandler<AssignOrdersCommand, UnitResult<Error>>
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ICourierRepository _courierRepository;
         private readonly IDispatchService _dispatchService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public AssignOrderHandler(IOrderRepository orderRepository, ICourierRepository courierRepository, IUnitOfWork unitOfWork, IDispatchService dispatchService)
+        public AssignOrdersHandler(IOrderRepository orderRepository,
+            ICourierRepository courierRepository,
+            IUnitOfWork unitOfWork,
+            IDispatchService dispatchService)
         {
             _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
             _courierRepository = courierRepository ?? throw new ArgumentNullException(nameof(courierRepository));
@@ -52,11 +56,14 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
                 var orderAssign = order.Assign(courierSuitable.Id);
                 var courierAssign = courierSuitable.TakeOrder(order);
 
-                if (courierAssign.IsFailure)
-                {
-                    return courierAssign;
-                }
                 if (orderAssign.IsFailure)
+                {
+                    return orderAssign;
+                }
+
+                var courierAssign = courierSuitable.Value.TakeOrder(createOrder);
+
+                if (courierAssign.IsFailure)
                 {
                     return orderAssign;
                 }

@@ -20,7 +20,7 @@ namespace DeliveryApp.Core.Application.UseCases.Queries.GetUnfinishedOrders
             await connection.OpenAsync(cancellationToken);
 
             var result = await connection.QueryAsync<dynamic>(
-                @"Select id,location_x,location_y from public.order");
+                @"Select id,location_x,location_y from public.orders where order_status <> 'completed'");
 
             if (result.AsList().Count == 0)
             {

@@ -9,10 +9,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DeliveryApp.Infrastructure.Postgres.Migrations
+namespace DeliveryApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250912063539_Init")]
+    [Migration("20250920101444_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -42,7 +42,7 @@ namespace DeliveryApp.Infrastructure.Postgres.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("courier", (string)null);
+                    b.ToTable("couriers", (string)null);
                 });
 
             modelBuilder.Entity("DeliveryApp.Core.Domain.Model.NewFolder.StoragePlace", b =>
@@ -72,24 +72,18 @@ namespace DeliveryApp.Infrastructure.Postgres.Migrations
 
                     b.HasIndex("CourierId");
 
-                    b.HasIndex("OrderId")
-                        .IsUnique();
-
-                    b.ToTable("storagePlaces", (string)null);
+                    b.ToTable("storage_places", (string)null);
                 });
 
             modelBuilder.Entity("DeliveryApp.Core.Domain.Model.OrderAggregate.Order", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<Guid?>("CourierId")
                         .HasColumnType("uuid")
                         .HasColumnName("courier_id");
-
-                    b.Property<Guid?>("StoragePlaceId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("storage_place_id");
 
                     b.Property<int>("Volume")
                         .HasColumnType("integer")
@@ -109,15 +103,15 @@ namespace DeliveryApp.Infrastructure.Postgres.Migrations
 
                             b1.Property<int>("X")
                                 .HasColumnType("integer")
-                                .HasColumnName("coordinate_x");
+                                .HasColumnName("location_x");
 
                             b1.Property<int>("Y")
                                 .HasColumnType("integer")
-                                .HasColumnName("coordinate_y");
+                                .HasColumnName("location_y");
 
                             b1.HasKey("CourierId");
 
-                            b1.ToTable("courier");
+                            b1.ToTable("couriers");
 
                             b1.WithOwner()
                                 .HasForeignKey("CourierId");
@@ -129,20 +123,11 @@ namespace DeliveryApp.Infrastructure.Postgres.Migrations
 
             modelBuilder.Entity("DeliveryApp.Core.Domain.Model.NewFolder.StoragePlace", b =>
                 {
-                    b.HasOne("DeliveryApp.Core.Domain.Model.CourierAggregate.Courier", "Courier")
+                    b.HasOne("DeliveryApp.Core.Domain.Model.CourierAggregate.Courier", null)
                         .WithMany("StoragePlaces")
                         .HasForeignKey("CourierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("DeliveryApp.Core.Domain.Model.OrderAggregate.Order", "Order")
-                        .WithOne("StoragePlace")
-                        .HasForeignKey("DeliveryApp.Core.Domain.Model.NewFolder.StoragePlace", "OrderId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Courier");
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("DeliveryApp.Core.Domain.Model.OrderAggregate.Order", b =>
@@ -154,11 +139,11 @@ namespace DeliveryApp.Infrastructure.Postgres.Migrations
 
                             b1.Property<int>("X")
                                 .HasColumnType("integer")
-                                .HasColumnName("coordinate_x");
+                                .HasColumnName("location_x");
 
                             b1.Property<int>("Y")
                                 .HasColumnType("integer")
-                                .HasColumnName("coordinate_y");
+                                .HasColumnName("location_y");
 
                             b1.HasKey("OrderId");
 
@@ -175,7 +160,9 @@ namespace DeliveryApp.Infrastructure.Postgres.Migrations
 
                             b1.Property<string>("Name")
                                 .IsRequired()
+                                .ValueGeneratedOnAdd()
                                 .HasColumnType("text")
+                                .HasDefaultValue("created")
                                 .HasColumnName("order_status");
 
                             b1.HasKey("OrderId");
@@ -195,11 +182,6 @@ namespace DeliveryApp.Infrastructure.Postgres.Migrations
             modelBuilder.Entity("DeliveryApp.Core.Domain.Model.CourierAggregate.Courier", b =>
                 {
                     b.Navigation("StoragePlaces");
-                });
-
-            modelBuilder.Entity("DeliveryApp.Core.Domain.Model.OrderAggregate.Order", b =>
-                {
-                    b.Navigation("StoragePlace");
                 });
 #pragma warning restore 612, 618
         }

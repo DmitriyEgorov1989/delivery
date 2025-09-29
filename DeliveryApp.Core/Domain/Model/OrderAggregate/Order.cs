@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Model.CourierAggregate;
 using DeliveryApp.Core.Domain.Model.NewFolder;
 using DeliveryApp.Core.Domain.Model.SharedKernel;
 using Primitives;
@@ -54,18 +55,7 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
         /// <param name="orderid">Id заказа</param>
         /// <param name="location">Локация доставки</param>
         /// <param name="volume">Обьем заказа</param>
-        /// <returns></returns>
-
-        ///<summary>
-        /// Навигационное свойство
-        /// </summary>
-        public StoragePlace StoragePlace { get; }
-
-        /// <summary>
-        /// FK
-        /// </summary>
-        public Guid? StoragePlaceId { get; }
-
+        /// <returns></returns>}
         public static Result<Order, Error> Create(Guid orderid, Location location, int volume)
         {
             if (orderid == Guid.Empty)
@@ -90,24 +80,19 @@ namespace DeliveryApp.Core.Domain.Model.OrderAggregate
         /// </summary>
         /// <param name="courier"></param>
         /// <returns></returns>
-        public UnitResult<Error> Assign(Guid courierId)
+        public UnitResult<Error> Assign(Guid? courierId)
         {
-            if (courierId == Guid.Empty)
+            if (courierId == null)
             {
-                return GeneralErrors.ValueIsInvalid(nameof(courierId));
+                return UnitResult.Failure(GeneralErrors.ValueIsInvalid(nameof(courierId)));
             }
-
-            if (Status == OrderStatus.Created)
+            if (Status != OrderStatus.Created)
             {
-                Status = OrderStatus.Assigned;
-                CourierId = courierId;
+                return UnitResult.Failure(GeneralErrors.ValueIsRequired($"{nameof(Status)}"));
             }
-
-            if (Status != OrderStatus.Assigned || CourierId is null)
-            {
-                return GeneralErrors.ValueIsRequired($"{nameof(Status)} or {nameof(CourierId)}");
-            }
-
+            Status = OrderStatus.Assigned;
+            CourierId = courierId;
+         
             return UnitResult.Success<Error>();
         }
         /// <summary>

@@ -7,7 +7,8 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        { }
+        {
+        }
 
         public DbSet<Courier> Couriers { get; set; }
 

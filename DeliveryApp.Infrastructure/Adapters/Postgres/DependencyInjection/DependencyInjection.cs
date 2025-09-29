@@ -12,7 +12,7 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.DependencyInjection
     {
         public static void AddDBPostgres(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("CONNECTION_STRING");
+            var connectionString = configuration["CONNECTION_STRING"];
 
             services.AddDbContext<ApplicationDbContext>((_, options) =>
             {
@@ -26,8 +26,8 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres.DependencyInjection
 
         private static void InitQueries(this IServiceCollection services,string connectionString)
         {
-            services.AddScoped<IRequestHandler<GetBusyCouriersQuery, GetBusyCouriersResponse>>(_=>
-            new GetBusyCouriersHandler(connectionString));
+            services.AddScoped<IRequestHandler<GetAllCouriersQuery, GetAllCouriersResponse>>(_=>
+            new GetAllCouriersHandler(connectionString));
            
             services.AddScoped<IRequestHandler<GetUnfinishedOrdersQuery, GetUnfinishedOrdersResponse>>(_ => 
             new GetUnfinishedOrdersHandler(connectionString));

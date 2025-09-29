@@ -4,7 +4,7 @@ using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
 {
-   public class AssignOrderComand:IRequest<UnitResult<Error>>
+   public class AssignOrdersCommand : IRequest<UnitResult<Error>>
     {
     }
 }

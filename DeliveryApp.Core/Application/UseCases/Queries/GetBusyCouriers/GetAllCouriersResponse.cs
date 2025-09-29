@@ -2,7 +2,7 @@
 
 namespace DeliveryApp.Core.Application.UseCases.Queries.GetBusyCouriers
 {
-    public class GetBusyCouriersResponse(List<CourierDto> couriers)
+    public class GetAllCouriersResponse(List<CourierDto> couriers)
     {
         /// <summary>
         /// Список занятых курьеров

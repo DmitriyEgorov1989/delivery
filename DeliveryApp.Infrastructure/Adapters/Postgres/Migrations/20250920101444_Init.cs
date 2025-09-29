@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DeliveryApp.Infrastructure.Postgres.Migrations
+namespace DeliveryApp.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration
@@ -11,39 +12,38 @@ namespace DeliveryApp.Infrastructure.Postgres.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "courier",
+                name: "couriers",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
                     speed = table.Column<int>(type: "integer", nullable: false),
-                    coordinate_x = table.Column<int>(type: "integer", nullable: false),
-                    coordinate_y = table.Column<int>(type: "integer", nullable: false)
+                    location_x = table.Column<int>(type: "integer", nullable: false),
+                    location_y = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_courier", x => x.id);
+                    table.PrimaryKey("PK_couriers", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "orders",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    coordinate_x = table.Column<int>(type: "integer", nullable: true),
-                    coordinate_y = table.Column<int>(type: "integer", nullable: true),
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    location_x = table.Column<int>(type: "integer", nullable: true),
+                    location_y = table.Column<int>(type: "integer", nullable: true),
                     volume = table.Column<int>(type: "integer", nullable: false),
-                    order_status = table.Column<string>(type: "text", nullable: false),
-                    courier_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    storage_place_id = table.Column<Guid>(type: "uuid", nullable: true)
+                    order_status = table.Column<string>(type: "text", nullable: false, defaultValue: "created"),
+                    courier_id = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_orders", x => x.Id);
+                    table.PrimaryKey("PK_orders", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "storagePlaces",
+                name: "storage_places",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -54,44 +54,32 @@ namespace DeliveryApp.Infrastructure.Postgres.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_storagePlaces", x => x.id);
+                    table.PrimaryKey("PK_storage_places", x => x.id);
                     table.ForeignKey(
-                        name: "FK_storagePlaces_courier_courier_id",
+                        name: "FK_storage_places_couriers_courier_id",
                         column: x => x.courier_id,
-                        principalTable: "courier",
+                        principalTable: "couriers",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_storagePlaces_orders_order_id",
-                        column: x => x.order_id,
-                        principalTable: "orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_storagePlaces_courier_id",
-                table: "storagePlaces",
+                name: "IX_storage_places_courier_id",
+                table: "storage_places",
                 column: "courier_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_storagePlaces_order_id",
-                table: "storagePlaces",
-                column: "order_id",
-                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "storagePlaces");
-
-            migrationBuilder.DropTable(
-                name: "courier");
-
-            migrationBuilder.DropTable(
                 name: "orders");
+
+            migrationBuilder.DropTable(
+                name: "storage_places");
+
+            migrationBuilder.DropTable(
+                name: "couriers");
         }
     }
 }
