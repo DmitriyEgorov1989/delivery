@@ -28,8 +28,8 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.CreateOrder
             var getOrderLocationResult = await _geoClient.GetLocationAsync(request.Street, cancellationToken);
             if (getOrderLocationResult.IsFailure) return GeneralErrors.ValueIsInvalid(request.Street);
             var orderLocation = getOrderLocationResult.Value;
-            var newOrder = Order.Create(request.OrderId, orderLocation, request.Volume);
-            if(newOrder.IsFailure) 
+            var createResultOrder = Order.Create(request.OrderId, orderLocation, request.Volume);
+            if(createResultOrder.IsFailure) 
             {
                 return createResultOrder;
             }

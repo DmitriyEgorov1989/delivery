@@ -25,7 +25,7 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
             _dispatchService = dispatchService ?? throw new ArgumentNullException(nameof(dispatchService));
         }
 
-        public async Task<UnitResult<Error>> Handle(AssignOrderComand request, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> Handle(AssignOrdersCommand request, CancellationToken cancellationToken)
         {
             {
                 var maybeOrder = await _orderRepository.GetCreatedAsync();
@@ -61,11 +61,9 @@ namespace DeliveryApp.Core.Application.UseCases.Comands.AssignOrder
                     return orderAssign;
                 }
 
-                var courierAssign = courierSuitable.Value.TakeOrder(createOrder);
-
                 if (courierAssign.IsFailure)
                 {
-                    return orderAssign;
+                    return courierAssign;
                 }
                 
                 _courierRepository.Update(courierSuitable);
