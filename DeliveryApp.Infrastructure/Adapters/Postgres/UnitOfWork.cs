@@ -1,67 +1,58 @@
-﻿using MediatR;
+﻿using DeliveryApp.Infrastructure.Adapters.Postgres.Entities;
+using Newtonsoft.Json;
 using Primitives;
 
 namespace DeliveryApp.Infrastructure.Adapters.Postgres
 {
-    public class UnitOfWork : IUnitOfWork, IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly IMediator _mediator;
 
-        private bool _disposed;
-
-        public UnitOfWork(ApplicationDbContext dbContext, IMediator mediator)
+        public UnitOfWork(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-            _mediator = mediator;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            await SaveDomainEventsInOutboxEventMessage();
+
             await _dbContext.SaveChangesAsync(cancellationToken);
-            await PublishDomainEventAsync();
 
             return true;
         }
 
-        private async Task PublishDomainEventAsync()
+        private async Task SaveDomainEventsInOutboxEventMessage()
         {
-            //Получили агрегаты в которых есть доменные события
-            var domainEntities = _dbContext.ChangeTracker
+            var outboxMessage = _dbContext.ChangeTracker
                 .Entries<IAggregateRoot>()
-                .Where(e => e.Entity.GetDomainEvents().Any());
-            
-            //Перекладываем в другую переменную
-            var domainEvents = domainEntities
-                .SelectMany(e=>e.Entity.GetDomainEvents())
-                .ToList();
-
-            // Очищаем списолк с доменными событиями
-            domainEntities.ToList()
-                .ForEach(e => e.Entity.ClearDomainEvents());
-
-            //Публикуем доменные события
-            foreach (var domainEvent in domainEvents)
-                await _mediator.Publish(domainEvent);                          
-        }
-
-        public void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
+                .Select(e => e.Entity)
+                .SelectMany(aggregate =>
                 {
-                    _dbContext.Dispose();
-                }
+                    //Получаем список доменных событий
+                    var domainEvents = aggregate.GetDomainEvents();
 
-                _disposed = true;
-            }
+                    aggregate.ClearDomainEvents();
+
+                    return domainEvents;
+                })
+                .Select(domaimEvent => new OutboxMessage
+                {
+                    Id = domaimEvent.EventId,
+                    Type = domaimEvent.GetType().Name,
+                    OccurredOnUtc = DateTime.UtcNow,
+                    Content = JsonConvert.SerializeObject(domaimEvent,
+                    new JsonSerializerSettings
+                    {
+                        //Нужно чтобы знать какой тип возвращать
+                        TypeNameHandling = TypeNameHandling.All
+                    })
+
+                }).ToList();
+
+            // Добавяляем OutboxMessages в dbContext
+            // После выполнения этой строки в DbContext будут находится сам Aggregate и OutboxMessages
+            await _dbContext.Set<OutboxMessage>().AddRangeAsync(outboxMessage);
         }
     }
 }
