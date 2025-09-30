@@ -14,8 +14,10 @@ namespace DeliveryApp.Infrastructure.Adapters.Postgres
 
         public DbSet<Order> Orders { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         }
     }

@@ -1,42 +1,58 @@
-﻿using Primitives;
+﻿using DeliveryApp.Infrastructure.Adapters.Postgres.Entities;
+using Newtonsoft.Json;
+using Primitives;
 
 namespace DeliveryApp.Infrastructure.Adapters.Postgres
 {
-    public class UnitOfWork : IUnitOfWork, IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _dbContext;
-
-        private bool _disposed;
 
         public UnitOfWork(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            await SaveDomainEventsInOutboxEventMessage();
+
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return true;
         }
 
-        public void Dispose(bool disposing)
+        private async Task SaveDomainEventsInOutboxEventMessage()
         {
-            if (!_disposed)
-            {
-                if (disposing)
+            var outboxMessage = _dbContext.ChangeTracker
+                .Entries<IAggregateRoot>()
+                .Select(e => e.Entity)
+                .SelectMany(aggregate =>
                 {
-                    _dbContext.Dispose();
-                }
+                    //Получаем список доменных событий
+                    var domainEvents = aggregate.GetDomainEvents();
 
-                _disposed = true;
-            }
+                    aggregate.ClearDomainEvents();
+
+                    return domainEvents;
+                })
+                .Select(domaimEvent => new OutboxMessage
+                {
+                    Id = domaimEvent.EventId,
+                    Type = domaimEvent.GetType().Name,
+                    OccurredOnUtc = DateTime.UtcNow,
+                    Content = JsonConvert.SerializeObject(domaimEvent,
+                    new JsonSerializerSettings
+                    {
+                        //Нужно чтобы знать какой тип возвращать
+                        TypeNameHandling = TypeNameHandling.All
+                    })
+
+                }).ToList();
+
+            // Добавяляем OutboxMessages в dbContext
+            // После выполнения этой строки в DbContext будут находится сам Aggregate и OutboxMessages
+            await _dbContext.Set<OutboxMessage>().AddRangeAsync(outboxMessage);
         }
     }
 }

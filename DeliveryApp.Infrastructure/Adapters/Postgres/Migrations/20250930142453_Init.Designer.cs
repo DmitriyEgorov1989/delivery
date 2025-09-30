@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DeliveryApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250920101444_Init")]
+    [Migration("20250930142453_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -94,6 +94,35 @@ namespace DeliveryApp.Infrastructure.Migrations
                     b.ToTable("orders", (string)null);
                 });
 
+            modelBuilder.Entity("DeliveryApp.Infrastructure.Adapters.Postgres.Entities.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<DateTime>("OccurredOnUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occured_on_utc");
+
+                    b.Property<DateTime?>("ProcessedOnUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("processed_on_utc");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("outbox", (string)null);
+                });
+
             modelBuilder.Entity("DeliveryApp.Core.Domain.Model.CourierAggregate.Courier", b =>
                 {
                     b.OwnsOne("DeliveryApp.Core.Domain.Model.SharedKernel.Location", "Location", b1 =>
@@ -153,7 +182,7 @@ namespace DeliveryApp.Infrastructure.Migrations
                                 .HasForeignKey("OrderId");
                         });
 
-                    b.OwnsOne("DeliveryApp.Core.Domain.Model.SharedKernel.OrderStatus", "Status", b1 =>
+                    b.OwnsOne("DeliveryApp.Core.Domain.Model.OrderAggregate.OrderStatus", "Status", b1 =>
                         {
                             b1.Property<Guid>("OrderId")
                                 .HasColumnType("uuid");

@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 
 namespace DeliveryApp.Infrastructure.Adapters.Postgres.DependencyInjection
-{
+{   
     public static class DependencyInjection
     {
         public static void AddDBPostgres(this IServiceCollection services, IConfiguration configuration)
